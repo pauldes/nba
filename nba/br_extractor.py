@@ -7,6 +7,11 @@ from bs4 import BeautifulSoup
 from basketball_reference_scraper.teams import get_roster, get_team_stats
 from basketball_reference_scraper.seasons import get_standings
 
+""" 
+1955-56 through 1979-1980: Voting was done by players. Rules prohibited player from voting for himself or any teammate.
+1980-81 to present: Voting conducted by media. 
+"""
+
 class BRExtractor():
 
     default_team_names_file_path = "./nba/team_names.yaml"
@@ -26,6 +31,57 @@ class BRExtractor():
                 return dict()
             else:
                 return loaded
+    
+    @staticmethod
+    def retrieve_mvp_votes(season):
+        season = str(season)
+        root_url = "https://www.basketball-reference.com/"
+        url = f"{root_url}awards/awards_{season}.html"
+        r = requests.get(url)
+        if r.status_code==200:
+            soup = BeautifulSoup(r.content, 'html.parser')
+            table_mvp = soup.find('table', id='mvp')
+            table_nba_mvp = soup.find('table', id='nba_mvp')
+            if table_mvp is not None:
+                table = table_mvp
+            elif table_nba_mvp is not None:
+                table = table_nba_mvp
+            else:
+                raise Exception("No table found for MVP data for season", season)
+            df = pd.read_html(str(table), header=1)[0]
+            df.columns = [str(col).upper() for col in df.columns]
+            df.loc[:, 'SEASON'] = season
+            df = df.rename(columns={"SHARE":"MVP_VOTES_SHARE"})
+            df = df.rename(columns={"TM":"TEAM"})
+            df = df[["PLAYER", "TEAM", "SEASON", "MVP_VOTES_SHARE", "RANK"]]
+            df.loc[:, 'PLAYER'] = df["PLAYER"].str.replace('[^A-Za-z]', '')
+            df.loc[:, 'MVP_WINNER'] = False
+            df["RANK"] = df["RANK"].astype(str).str.replace('[^0-9]', '').astype(int, errors='raise')
+            df.loc[df["RANK"]==1, 'MVP_WINNER'] = True
+            df.loc[:, 'MVP_PODIUM'] = False
+            df.loc[df["RANK"].isin([1,2,3]), 'MVP_PODIUM'] = True
+            df.loc[:, 'MVP_CANDIDATE'] = True
+            df = df.drop("RANK", axis='columns')
+            return df
+        else:
+            raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)
+
+    def get_mvp(self, subset_by_seasons: list = None):
+        allowed_seasons = range(1974, 2020)
+        if subset_by_seasons is not None:
+            seasons = [season for season in subset_by_seasons if season in allowed_seasons]
+        else:
+            seasons = allowed_seasons
+        total_dfs = []
+        for season in seasons:
+            print("Retrieving MVP of season", season, "...")
+            results = self.retrieve_mvp_votes(season)
+            results.loc[:, "player_season_team"] = results["PLAYER"].str.replace(" ", "") + "_" + results["SEASON"] + "_" + results["TEAM"]
+            results = results.set_index("player_season_team", drop=True)
+            total_dfs.append(results)
+        all_df = pandas.concat(total_dfs, join='outer', axis="index", ignore_index=False)
+        return all_df
+
 
     @staticmethod
     def get_roster_stats_v2(season, stat_type):
@@ -48,6 +104,7 @@ class BRExtractor():
                 df = df.loc[df.Player!="Player",:]
                 df.columns = [str(col).upper() for col in df.columns]
                 df.loc[:, 'SEASON'] = season
+                df.loc[:, 'PLAYER'] = df["PLAYER"].str.replace('[^A-Za-z]', '')
                 df = df.rename(columns={"TM":"TEAM"})
                 df = df.drop("RK", axis='columns')
                 return df
