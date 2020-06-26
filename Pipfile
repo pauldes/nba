@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
+qbstyles = "*"
+sklearn = "*"
+jupyter = "*"
+beautifulsoup4 = "*"
+basketball-reference-scraper = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "3.7"
