@@ -4,7 +4,8 @@ import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from basketball_reference_scraper.teams import get_roster, get_team_stats, get_opp_stats, get_roster_stats, get_team_misc
+from basketball_reference_scraper.teams import get_roster, get_team_stats
+from basketball_reference_scraper.seasons import get_standings
 
 class BRExtractor():
 
@@ -29,6 +30,9 @@ class BRExtractor():
     @staticmethod
     def get_roster_stats_v2(season, stat_type):
         """
+        Return all players stats for one season.
+        Season : end year of season, as int or str
+        Available stat types (case insensitive) : 'totals', 'per_game', 'per_36min', 'per_100poss', 'advanced'
         """
         root_url = "https://www.basketball-reference.com/"
         season = str(season)
@@ -50,9 +54,44 @@ class BRExtractor():
         else:
             raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)
 
+    def get_team_standings(self, subset_by_seasons: list = None):
+        """ Assumptions : the season is over by June 1st.
+        TODO : Use the season dataset to find last game date.
+        """
+        allowed_seasons = range(1974, 2021)
+        if subset_by_seasons is not None:
+            seasons = [season for season in subset_by_seasons if season in allowed_seasons]
+        else:
+            seasons = allowed_seasons
+        total_dfs = []
+        for season in seasons:
+            print("Retrieving standings of season", season, "...")
+            date = "06-01-" + str(season)
+            dfs = []
+            results = get_standings(date=date)
+            for conference, df in results.items():
+                df.loc[:, "CONF"] = conference
+                df.loc[:, "CONF_RANK"] = df.index
+                df.loc[:, "TEAM"] = df["TEAM"].str.upper().str.replace('[^A-Z]', '')
+                team_names = {}
+                for raw, short in self.team_names.items():
+                    raw = ''.join(filter(str.isalpha, raw)).upper()
+                    team_names[raw] = short
+                df.loc[:, "TEAM"] = df["TEAM"].map(team_names)
+                df.loc[:, "GB"] = df["GB"].str.replace("—", "0.0").astype(float, errors="raise")
+                df.loc[:, "TEAM_SEASON"] = df["TEAM"] + "_" + str(season)
+                df.loc[:, "SEASON"] = season
+                df = df.set_index("TEAM_SEASON", drop=True)
+                dfs.append(df)
+            all_conf_df = pandas.concat(dfs, join='outer', axis="index", ignore_index=False)
+            total_dfs.append(all_conf_df)
+        all_conf_df = pandas.concat(total_dfs, join='outer', axis="index", ignore_index=False)
+        return all_conf_df
 
     def get_player_stats(self, subset_by_teams: list = None, subset_by_seasons: list = None, subset_by_stat_types: list = None):
         """
+        Get a set of stats.
+        Defaults to all teams, all seasons, all stat types.
         """
 
         allowed_stat_types = ['totals', 'per_game', 'per_36min', 'per_100poss', 'advanced']
@@ -89,12 +128,13 @@ class BRExtractor():
                     stat_type_df = stat_type_df.dropna(axis="columns", how="all")
                     stat_type_dfs.append(stat_type_df)
                     
-            season_df = pandas.concat(stat_type_dfs, join='outer', axis="index", ignore_index=False)
+            season_df = pandas.concat(stat_type_dfs, join='outer', axis="columns", ignore_index=False)
+            season_df = season_df.loc[:, ~season_df.columns.duplicated()]
             season_dfs.append(season_df)
 
         full_df = pandas.concat(season_dfs, join='outer', axis="index", ignore_index=False)
 
         if subset_by_teams is not None:
-            full_df = full_df.loc[full_df.TEAM.isin(subset_by_teams), :]
+            full_df = full_df[full_df.TEAM.isin(subset_by_teams)]
 
         return full_df
