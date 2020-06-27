@@ -127,14 +127,19 @@ class BRExtractor():
             dfs = []
             results = get_standings(date=date)
             for conference, df in results.items():
+                df = df.dropna(axis='index', how='any')
+                df = df.sort_values(by="W/L%", ascending=False)
+                df = df.reset_index(drop=True)
                 df.loc[:, "CONF"] = conference
-                df.loc[:, "CONF_RANK"] = df.index
+                df.loc[:, "CONF_RANK"] = df.index + 1
                 df.loc[:, "TEAM"] = df["TEAM"].str.upper().str.replace('[^A-Z]', '')
                 team_names = {}
                 for raw, short in self.team_names.items():
                     raw = ''.join(filter(str.isalpha, raw)).upper()
                     team_names[raw] = short
                 df.loc[:, "TEAM"] = df["TEAM"].map(team_names)
+                if df["TEAM"].isna().sum() > 0:
+                    raise ValueError("Unknown/unmapped team")
                 df.loc[:, "GB"] = df["GB"].str.replace("—", "0.0").astype(float, errors="raise")
                 df.loc[:, "TEAM_SEASON"] = df["TEAM"] + "_" + str(season)
                 df.loc[:, "SEASON"] = season
