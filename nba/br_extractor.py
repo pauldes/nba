@@ -107,6 +107,9 @@ class BRExtractor():
                 df.loc[:, 'PLAYER'] = df["PLAYER"].str.replace('[^A-Za-z]', '')
                 df = df.rename(columns={"TM":"TEAM"})
                 df = df.drop("RK", axis='columns')
+                for col in df.columns:
+                    if col.startswith("3P"):
+                        df[col] = df[col].fillna(0.0)
                 return df
         else:
             raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)

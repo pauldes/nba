@@ -18,6 +18,7 @@ basketball-reference-scraper = "*"
 pyyaml = "*"
 html5lib = "*"
 mlflow = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.7"
