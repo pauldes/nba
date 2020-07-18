@@ -19,6 +19,7 @@ pyyaml = "*"
 html5lib = "*"
 mlflow = "*"
 scipy = "*"
+heatmapz = "*"
 
 [requires]
 python_version = "3.7"
