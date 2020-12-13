@@ -36,9 +36,9 @@ def pairplot_columns(dataframe, columns, color_by):
 def plot_columns_against_target(dataframe, columns, target_column):
     seaborn.pairplot(dataframe, x_vars=[target_column], y_vars=columns, corner=True)
 
-def plot_correlation_heatmap(dataframe, corner=True):
+def plot_correlation_heatmap(dataframe, corner=True, method='pearson'):
     # Compute the correlation matrix
-    corr = dataframe.corr()
+    corr = dataframe.corr(method=method)
     # Generate a mask for the upper triangle
     if corner:
         mask = numpy.triu(numpy.ones_like(corr, dtype=numpy.bool))
