@@ -1,5 +1,6 @@
 import numpy
 import seaborn
+from matplotlib import pyplot
 
 def get_columns_with_inter_correlations_under(dataframe, treshold):
     keep = dataframe.columns
@@ -50,3 +51,4 @@ def plot_correlation_heatmap(dataframe, corner=True, method='pearson'):
     cmap = seaborn.diverging_palette(240, 10, as_cmap=True)
     # Draw the heatmap with the mask and correct aspect ratio
     seaborn.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True, fmt=".2f")
+    pyplot.title(method)
