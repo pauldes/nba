@@ -140,9 +140,12 @@ class BRExtractor():
                 for raw, short in self.team_names.items():
                     raw = ''.join(filter(str.isalpha, raw)).upper()
                     team_names[raw] = short
+                df = df[~df["TEAM"].str.contains("DIVISION")]
+                unmapped_teams = [team for team in df["TEAM"].unique() if team not in team_names.keys()]
+                mapped_teams = [team for team in df["TEAM"].unique() if team in team_names.keys()]
                 df.loc[:, "TEAM"] = df["TEAM"].map(team_names)
                 if df["TEAM"].isna().sum() > 0:
-                    raise ValueError("Unknown/unmapped team")
+                    raise ValueError("Unknown/unmapped teams : %s", unmapped_teams)
                 df.loc[:, "GB"] = df["GB"].str.replace("—", "0.0").astype(float, errors="raise")
                 df.loc[:, "TEAM_SEASON"] = df["TEAM"] + "_" + str(season)
                 df.loc[:, "SEASON"] = season
