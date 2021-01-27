@@ -22,5 +22,7 @@ scipy = "*"
 heatmapz = "*"
 streamlit = "*"
 
+cython = "*"
+
 [requires]
 python_version = "3.7"

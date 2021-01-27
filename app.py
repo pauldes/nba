@@ -1,6 +1,9 @@
 import streamlit as st
 
-st.title('Demo streamlit application')
+st.set_page_config(page_title='NBA MVP Prediction', page_icon = None, layout = 'centered', initial_sidebar_state = 'auto')
+# favicon being an object of the same kind as the one you should provide st.image() with (ie. a PIL array for example) or a string (url or local file path)
+
+st.title('NBA MVP Prediction')
 
 # Labels
 label_lowercaser = "Lowercaser"
