@@ -1,9 +1,11 @@
 import os
+import datetime
 import pandas
 import yaml
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+
 from basketball_reference_scraper.teams import get_roster, get_team_stats
 from basketball_reference_scraper.seasons import get_standings
 
@@ -67,7 +69,8 @@ class BRExtractor():
             raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)
 
     def get_mvp(self, subset_by_seasons: list = None):
-        allowed_seasons = range(1974, 2020)
+        year = datetime.datetime.now().year
+        allowed_seasons = range(1974, year)
         if subset_by_seasons is not None:
             seasons = [season for season in subset_by_seasons if season in allowed_seasons]
         else:
@@ -118,7 +121,8 @@ class BRExtractor():
         """ Assumptions : the season is over by June 1st.
         TODO : Use the season dataset to find last game date.
         """
-        allowed_seasons = range(1974, 2021)
+        year = datetime.datetime.now().year
+        allowed_seasons = range(1974, year+1)
         if subset_by_seasons is not None:
             seasons = [season for season in subset_by_seasons if season in allowed_seasons]
         else:
@@ -163,7 +167,7 @@ class BRExtractor():
         """
 
         allowed_stat_types = ['totals', 'per_game', 'per_36min', 'per_100poss', 'advanced']
-        allowed_seasons = range(1974, 2021)
+        allowed_seasons = range(1974, year + 1)
         allowed_teams = list(set(self.team_names.values()))
 
         if subset_by_teams is not None:
@@ -181,7 +185,7 @@ class BRExtractor():
         
         season_dfs = []
         for season in seasons:
-            do_not_suffix = ["PLAYER", "POS", "AGE", "TEAM", "SEASON", "G", "GS", "FG%", "3P%", "FT%", "2P%", "eFG%"]
+            do_not_suffix = ["PLAYER", "POS", "AGE", "TEAM", "SEASON", "G", "GS", "FG%", "3P%", "FT%", "2P%", "eFG%", "MP"]
             stat_type_dfs = []
             for stat_type in stat_types:
                 print("Retrieving", stat_type, "stats for season", season,"...")

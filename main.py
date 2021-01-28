@@ -1,8 +1,10 @@
 import argparse
+import datetime
 import pandas
 from nba import br_extractor
 
 __version__ = '0.1.0'
+year = datetime.datetime.now().year
 
 def get_parser():
     """
@@ -46,8 +48,8 @@ def consolidate():
     stats = pandas.read_csv("./data/all_players_stats.csv")
     all_data = stats.merge(awards, how='left', on="player_season_team")
     for col in "MVP_WINNER", "MVP_PODIUM", "MVP_CANDIDATE":
-            all_data.loc[all_data["SEASON"]!=2020, col] = all_data[col].fillna(False)
-    all_data.loc[all_data["SEASON"]!=2020, "MVP_VOTES_SHARE"] = all_data["MVP_VOTES_SHARE"].fillna(0.0)
+            all_data.loc[all_data["SEASON"]!=year, col] = all_data[col].fillna(False)
+    all_data.loc[all_data["SEASON"]!=year, "MVP_VOTES_SHARE"] = all_data["MVP_VOTES_SHARE"].fillna(0.0)
     all_data = all_data.merge(standings, how='inner', on=["TEAM", "SEASON"])
     sample_cols = ["player_season_team", "MVP_VOTES_SHARE", "MVP_WINNER"]
     print("Sample of MVP winners : \n", all_data[all_data["MVP_WINNER"]==True].sample(10)[sample_cols])
@@ -59,6 +61,8 @@ def consolidate():
     all_data.to_csv(path)
 
 def train():
+    # clean_data
+    # pipe
     pass
 
 def expose():

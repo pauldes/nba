@@ -1,41 +1,72 @@
+import datetime
+
 import streamlit as st
 
-st.set_page_config(page_title='NBA MVP Prediction', page_icon = None, layout = 'centered', initial_sidebar_state = 'auto')
-# favicon being an object of the same kind as the one you should provide st.image() with (ie. a PIL array for example) or a string (url or local file path)
+from nba import br_extractor
 
-st.title('NBA MVP Prediction')
+# Constants
+logo_url = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
+year = datetime.datetime.now().year
 
-# Labels
-label_lowercaser = "Lowercaser"
-label_uppercaser = "Uppercaser"
+# Page properties
+st.set_page_config(page_title='NBA MVP Prediction', page_icon = logo_url, layout = 'centered', initial_sidebar_state = 'auto')
+st.title(f'Predicting the MVP.')
+
+# Functions
+@st.cache
+def load_player_stats(season):
+    extractor = br_extractor.BRExtractor()
+    stats = extractor.get_player_stats(subset_by_seasons=[season], subset_by_stat_types=['per_game', 'per_36min', 'per_100poss', 'advanced'])
+    stats.to_csv("./data/current_player_stats.csv")
+    return stats
+@st.cache
+def load_team_stats(season):
+    extractor = br_extractor.BRExtractor()
+    stats = extractor.get_team_standings(subset_by_seasons=[season])
+    stats.to_csv("./data/current_team_stats.csv")
+    return stats
+@st.cache
+def consolidate_stats(team_stats, player_stats):
+    stats = player_stats.merge(team_stats, how='inner', on=["TEAM"])
+    #stats = stats.set_index("player_season_team", drop=True)
+    stats.to_csv("./data/current_consolidated_raw.csv")
+    return stats
+
+# Init page
+current_team_stats = load_team_stats(year)
+current_player_stats = load_player_stats(year)
+current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats)
 
 # Sidebar
-selectbox = st.sidebar.selectbox(
-    "Select a version...",
-    ("v1", "v2")
-)
-radio = st.sidebar.radio(
-    "Select a text transformer...",
-    (label_lowercaser, label_uppercaser)
-)
+st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
+st.sidebar.text(f"Season : {year-1}-{year}")
+st.sidebar.markdown('''
+**Predicting the NBA Most Valuable Player using machine learning.**
 
-# Content
-st.header(radio)
-st.markdown('''
-This is a demo. For creating the app,
-we used [Streamlit](https://streamlit.io/).
+Model used :
+
+Performance :
+- Training set : XX%
+- Validation set : YY%
+- Test set : ZZ%
+
+
+Made by [pauldes](https://github.com/pauldes/nba-mvp-prediction).
 ''')
-st.subheader(f"{radio} | {selectbox}")
-input_text = st.text_input(label='Type some text.', value='This is an example of text.')
-if radio==label_lowercaser:
-    res = str(input_text).lower()
-else:
-    res = str(input_text).upper()
-st.write(f'Transformed text : {res}')
-st.write("Confidence : 80%")
-st.progress(80)
-age = st.slider('How old are you?', 0, 100, 25)
-if age==80:
-    st.balloons()
-values = st.slider('Select a range of values', 0.0, 100.0, (25.0, 75.0))
-st.file_uploader("You can alway upload a file, but I am pretty confident nothing will happen.")
+
+# Main content
+st.header("Data retrieved")
+st.subheader("Player stats")
+st.markdown('''
+These stats describe the player individual accomplishments.
+''')
+st.dataframe(data=current_player_stats.sample(10), width=None, height=None)
+st.subheader("Team stats")
+st.markdown('''
+These stats describe the team accomplishments.
+''')
+st.dataframe(data=current_team_stats.sample(10), width=None, height=None)
+st.header("Data processed")
+st.subheader("Cleaned data")
+st.subheader("Preprocessed data")
+st.header("Predictions")
