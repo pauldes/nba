@@ -165,7 +165,7 @@ class BRExtractor():
         Get a set of stats.
         Defaults to all teams, all seasons, all stat types.
         """
-
+        year = datetime.datetime.now().year
         allowed_stat_types = ['totals', 'per_game', 'per_36min', 'per_100poss', 'advanced']
         allowed_seasons = range(1974, year + 1)
         allowed_teams = list(set(self.team_names.values()))
