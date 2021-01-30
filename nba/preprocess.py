@@ -4,8 +4,11 @@ import pandas
 import numpy
 import sklearn
 
-def standardize(dataframe, fit_on=None, fit_per_values_of=None):
-    scaler = sklearn.preprocessing.StandardScaler(with_mean=True, with_std=True)
+def standardize(dataframe, fit_on=None, fit_per_values_of=None, min_max_scaler=False):
+    if min_max_scaler:
+        scaler = sklearn.preprocessing.MinMaxScaler()
+    else:
+        scaler = sklearn.preprocessing.StandardScaler(with_mean=True, with_std=True)
     if fit_on is not None and fit_per_values_of is not None:
         raise NotImplementedError
     if fit_on is None:
