@@ -1,4 +1,4 @@
 /nba/__pycache__/
 /.vscode/
-/data/*
+/data/*.csv
 /mlruns/
