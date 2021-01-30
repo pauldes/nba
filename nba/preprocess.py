@@ -20,9 +20,10 @@ def standardize(dataframe, fit_on=None, fit_per_values_of=None, min_max_scaler=F
             curr_index = series[series==unique].index
             df_subset = dataframe.loc[curr_index, :]
             scaler.fit(df_subset[df_subset.columns])
-            scaled.loc[curr_index, scaled.columns] = scaler.transform(df_subset[df_subset.columns]) 
-    scaler.fit(fit_on[fit_on.columns])
-    scaled[scaled.columns] = scaler.transform(dataframe[dataframe.columns]) 
+            scaled.loc[curr_index, scaled.columns] = scaler.transform(df_subset[df_subset.columns])
+    else:
+        scaler.fit(fit_on[fit_on.columns])
+        scaled[scaled.columns] = scaler.transform(dataframe[dataframe.columns]) 
     return scaled
 
 def get_numerical_columns(dataframe):
