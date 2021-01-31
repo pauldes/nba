@@ -3,7 +3,6 @@ import seaborn
 from matplotlib import pyplot
 
 def get_columns_with_inter_correlations_under(dataframe, treshold):
-    keep = dataframe.columns
     data_curr = dataframe.copy()
     initial_num_cols = len(data_curr.columns)
     corr = get_column_pairs_correlation(data_curr)
@@ -25,8 +24,8 @@ def get_column_pairs_correlation(dataframe):
     so = so[so<1.000]
     return so
 
-def get_columns_correlation_with_target(dataframe, target_column):
-    corr = dataframe.corr()
+def get_columns_correlation_with_target(dataframe, target_column, method='pearson'):
+    corr = dataframe.corr(method=method)
     res = corr[target_column].abs().sort_values(ascending=False)
     res = res[res<1.000]
     return res

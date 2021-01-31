@@ -2,8 +2,9 @@ import datetime
 
 import streamlit as st
 import pandas
+import joblib
 
-from nba import br_extractor
+from nba import br_extractor, preprocess
 
 # Constants
 logo_url = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
@@ -46,6 +47,15 @@ def avg_real_mvp_rank(test_dataset_predictions):
     metrics = (test_dataset_predictions["REAL_RANK"]).mean()
     return "%.2f" % metrics
 
+def predict(data, model):
+    cat = ['POS', 'CONF']
+    num = ['2P%', '2P_per_game', '3P%', '3PAR_advanced', '3PA_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FG_per_100poss', 'FT%', 'FTR_advanced', 'FT_per_game', 'G', 'MP', 'OBPM_advanced', 'ORB%_advanced', 'ORTG_per_100poss', 'OWS_advanced', 'PF_per_36min', 'PF_per_game', 'PTS_per_game', 'STL_per_game', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB_per_36min', 'TS%_advanced', 'WS/48_advanced', 'GB', 'PW', 'PL', 'PA/G', 'CONF_RANK']
+    min_max_scaling = True
+    data_processed_features_only, data_raw = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
+    features = ['OWS_advanced', 'ORTG_per_100poss', 'STL_per_game', 'PW', 'TOV%_advanced', 'FG_per_100poss', 'DRTG_per_100poss', 'TOV_per_36min', 'PF_per_36min', 'CONF_RANK', 'OBPM_advanced', 'ORB%_advanced', 'FT%', 'DBPM_advanced', 'PTS_per_game', 'FTR_advanced', 'BLK_per_36min', 'FT_per_game', 'MP', 'AST%_advanced', '3PAR_advanced', 'PF_per_game', '2P_per_game', 'FG%', 'TOV_per_game', 'DRB_per_game', 'TS%_advanced', 'PA/G', 'PL', '2P%', 'DWS_advanced', '3PA_per_game', 'GB', 'TRB_per_36min', '3P%', 'AGE', 'G', 'WS/48_advanced', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG', 'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
+    X = data_processed_features_only[features]
+    preds = model.predict(X)
+
 # Init page
 current_team_stats = load_team_stats(year)
 current_player_stats = load_player_stats(year)
@@ -55,6 +65,7 @@ preds_test = load_test_preds()
 num_test_seasons = len(preds_test)
 mvp_found_pct = mvp_found_pct(preds_test)
 avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
+model = joblib.load('static/model/model.joblib') 
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -66,7 +77,7 @@ Expected performance of the model, as calculated on the test set ({num_test_seas
 - **{mvp_found_pct}** of MVPs correctly found
 - Real MVP is ranked in average **{avg_real_mvp_rank}**
 
-*Made by [pauldes](https://github.com/pauldes/nba-mvp-prediction).*
+*Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
 # Main content
