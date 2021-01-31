@@ -39,10 +39,9 @@ def load_test_preds():
     preds = pandas.read_csv("./static/data/test_dataset_predictions.csv")
     return preds
 def mvp_found_pct(test_dataset_predictions):
-    return (test_dataset_predictions["Pred. MVP"] == test_dataset_predictions["True MVP"]).sum() / len(winners)
+    return (test_dataset_predictions["Pred. MVP"] == test_dataset_predictions["True MVP"]).sum() / len(test_dataset_predictions)
 def avg_real_mvp_rank(test_dataset_predictions):
     return (test_dataset_predictions["REAL_RANK"]).mean()
-
 
 # Init page
 current_team_stats = load_team_stats(year)
