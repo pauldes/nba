@@ -52,6 +52,7 @@ current_player_stats = load_player_stats(year)
 current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats)
 preds_2020 = load_2020_preds()
 preds_test = load_test_preds()
+num_test_seasons = len(preds_test)
 mvp_found_pct = mvp_found_pct(preds_test)
 avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
 
@@ -61,9 +62,9 @@ st.sidebar.text(f"Season : {year-1}-{year}")
 st.sidebar.markdown(f'''
 **Predicting the NBA Most Valuable Player using machine learning.**
 
-Expected performance of the model, as calculated on the test set:
-- **{mvp_found_pct}** MVPs correctly found by the model
-- Real MVP is ranked in average **{avg_real_mvp_rank}** by the model
+Expected performance of the model, as calculated on the test set ({num_test_seasons} seasons):
+- **{mvp_found_pct}** of MVPs correctly found
+- Real MVP is ranked in average **{avg_real_mvp_rank}**
 
 *Made by [pauldes](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
@@ -82,7 +83,7 @@ These stats describe the team accomplishments.
 ''')
 st.dataframe(data=current_team_stats.sample(10), width=None, height=None)
 st.header("Model performance")
-st.subheader("Test dataset")
+st.subheader(f"Test predictions ({num_test_seasons} seasons)")
 st.markdown('''
 Predictions of the model on the unseen, test dataset.
 ''')
