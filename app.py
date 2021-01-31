@@ -38,6 +38,11 @@ def load_2020_preds():
 def load_test_preds():
     preds = pandas.read_csv("./static/data/test_dataset_predictions.csv")
     return preds
+def mvp_found_pct(test_dataset_predictions):
+    return (test_dataset_predictions["Pred. MVP"] == test_dataset_predictions["True MVP"]).sum() / len(winners)
+def avg_real_mvp_rank(test_dataset_predictions):
+    return (test_dataset_predictions["REAL_RANK"]).mean()
+
 
 # Init page
 current_team_stats = load_team_stats(year)
@@ -45,6 +50,8 @@ current_player_stats = load_player_stats(year)
 current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats)
 preds_2020 = load_2020_preds()
 preds_test = load_test_preds()
+mvp_found_pct = mvp_found_pct(preds_test)
+avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -81,6 +88,8 @@ st.markdown('''
 Predictions of the model on the unseen, test dataset.
 ''')
 st.dataframe(data=preds_2020, width=None, height=None)
+str.text(f"% of MVPs correctly found by the model : {mvp_found_pct}"")
+str.text(f"Average rank of the real MVP in the model predictions : {avg_real_mvp_rank}"")
 st.subheader("Year 2020")
 st.markdown('''
 Predictions of the model on the unseen, 2020 season dataset.
