@@ -1,6 +1,7 @@
 import datetime
 
 import streamlit as st
+import pandas
 
 from nba import br_extractor
 
@@ -31,11 +32,19 @@ def consolidate_stats(team_stats, player_stats):
     #stats = stats.set_index("player_season_team", drop=True)
     stats.to_csv("./data/current_consolidated_raw.csv")
     return stats
+def load_2020_preds():
+    preds = pandas.read_csv("./static/data/2020_dataset_predictions.csv")
+    return preds
+def load_test_preds():
+    preds = pandas.read_csv("./static/data/test_dataset_predictions.csv")
+    return preds
 
 # Init page
 current_team_stats = load_team_stats(year)
 current_player_stats = load_player_stats(year)
 current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats)
+preds_2020 = load_2020_preds()
+preds_test = load_test_preds()
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -66,7 +75,15 @@ st.markdown('''
 These stats describe the team accomplishments.
 ''')
 st.dataframe(data=current_team_stats.sample(10), width=None, height=None)
-st.header("Data processed")
-st.subheader("Cleaned data")
-st.subheader("Preprocessed data")
-st.header("Predictions")
+st.header("Model performance")
+st.subheader("Test dataset")
+st.markdown('''
+Predictions of the model on the unseen, test dataset.
+''')
+st.dataframe(data=preds_2020, width=None, height=None)
+st.subheader("Year 2020")
+st.markdown('''
+Predictions of the model on the unseen, 2020 season dataset.
+''')
+st.dataframe(data=preds_test, width=None, height=None)
+st.header("Current year predictions")
