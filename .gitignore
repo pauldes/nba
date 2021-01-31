@@ -2,3 +2,5 @@
 /.vscode/
 /data/*.csv
 /mlruns/
+Pipfile
+Pipfile.lock

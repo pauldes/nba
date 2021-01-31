@@ -39,9 +39,12 @@ def load_test_preds():
     preds = pandas.read_csv("./static/data/test_dataset_predictions.csv")
     return preds
 def mvp_found_pct(test_dataset_predictions):
-    return (test_dataset_predictions["Pred. MVP"] == test_dataset_predictions["True MVP"]).sum() / len(test_dataset_predictions)
+    metrics = (test_dataset_predictions["Pred. MVP"] == test_dataset_predictions["True MVP"]).sum() / len(test_dataset_predictions)
+    metrics = int(metrics*100)
+    return str(metrics) + " %"
 def avg_real_mvp_rank(test_dataset_predictions):
-    return (test_dataset_predictions["REAL_RANK"]).mean()
+    metrics = (test_dataset_predictions["REAL_RANK"]).mean()
+    return "%.2f" % metrics
 
 # Init page
 current_team_stats = load_team_stats(year)
@@ -55,21 +58,18 @@ avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
 st.sidebar.text(f"Season : {year-1}-{year}")
-st.sidebar.markdown('''
+st.sidebar.markdown(f'''
 **Predicting the NBA Most Valuable Player using machine learning.**
 
-Model used :
+Expected performance of the model, as calculated on the test set:
+- **{mvp_found_pct}** MVPs correctly found by the model
+- Real MVP is ranked in average **{avg_real_mvp_rank}** by the model
 
-Performance :
-- Training set : XX%
-- Validation set : YY%
-- Test set : ZZ%
-
-
-Made by [pauldes](https://github.com/pauldes/nba-mvp-prediction).
+*Made by [pauldes](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
 # Main content
+st.header("Current year predictions")
 st.header("Data retrieved")
 st.subheader("Player stats")
 st.markdown('''
@@ -86,12 +86,13 @@ st.subheader("Test dataset")
 st.markdown('''
 Predictions of the model on the unseen, test dataset.
 ''')
-st.dataframe(data=preds_2020, width=None, height=None)
-st.text(f"% of MVPs correctly found by the model : {mvp_found_pct}")
-st.text(f"Average rank of the real MVP in the model predictions : {avg_real_mvp_rank}")
+st.markdown(f'''
+- **{mvp_found_pct}** of MVPs correctly found
+- Real MVP is ranked in average **{avg_real_mvp_rank}**
+''')
+st.dataframe(data=preds_test, width=None, height=None)
 st.subheader("Year 2020")
 st.markdown('''
 Predictions of the model on the unseen, 2020 season dataset.
 ''')
-st.dataframe(data=preds_test, width=None, height=None)
-st.header("Current year predictions")
+st.dataframe(data=preds_2020, width=None, height=None)
