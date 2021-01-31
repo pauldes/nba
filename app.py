@@ -87,8 +87,8 @@ st.markdown('''
 Predictions of the model on the unseen, test dataset.
 ''')
 st.dataframe(data=preds_2020, width=None, height=None)
-str.text(f"% of MVPs correctly found by the model : {mvp_found_pct}")
-str.text(f"Average rank of the real MVP in the model predictions : {avg_real_mvp_rank}")
+st.text(f"% of MVPs correctly found by the model : {mvp_found_pct}")
+st.text(f"Average rank of the real MVP in the model predictions : {avg_real_mvp_rank}")
 st.subheader("Year 2020")
 st.markdown('''
 Predictions of the model on the unseen, 2020 season dataset.
