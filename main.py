@@ -21,9 +21,9 @@ def get_parser():
 
 def extract():
     extractor = br_extractor.BRExtractor()
-    extract_player_stats(extractor, "./data/all_players_stats.csv")
-    extract_mvp_votes(extractor, "./data/all_mvp_votes.csv")
-    extract_teams_standings(extractor, "./data/all_teams_standings.csv")
+    extract_player_stats(extractor, "./data/training/all_players_stats.csv")
+    extract_mvp_votes(extractor, "./data/training/all_mvp_votes.csv")
+    extract_teams_standings(extractor, "./data/training/all_teams_standings.csv")
 
 def extract_player_stats(extractor, path):
     # We do not retrieve totals stats since we want to be able to predict at any moment in the season
@@ -41,11 +41,11 @@ def extract_teams_standings(extractor, path):
     stats.to_csv(path)
 
 def consolidate():
-    standings = pandas.read_csv("./data/all_teams_standings.csv")
-    awards = pandas.read_csv("./data/all_mvp_votes.csv")
+    standings = pandas.read_csv("./data/training/all_teams_standings.csv")
+    awards = pandas.read_csv("./data/training/all_mvp_votes.csv")
     awards_col = ["MVP_VOTES_SHARE", "MVP_WINNER", "MVP_PODIUM", "MVP_CANDIDATE"]
     awards = awards[["player_season_team"] + awards_col]
-    stats = pandas.read_csv("./data/all_players_stats.csv")
+    stats = pandas.read_csv("./data/training/all_players_stats.csv")
     all_data = stats.merge(awards, how='left', on="player_season_team")
     for col in "MVP_WINNER", "MVP_PODIUM", "MVP_CANDIDATE":
             all_data.loc[all_data["SEASON"]!=year, col] = all_data[col].fillna(False)
@@ -57,7 +57,7 @@ def consolidate():
     print("Sample of MVP podium : \n", all_data[all_data["MVP_PODIUM"]==True].sample(10)[sample_cols])
     print("MVPs : ", all_data[all_data["MVP_WINNER"]==True]["SEASON"].nunique())
     all_data = all_data.set_index("player_season_team", drop=True)
-    path = "./data/all_consolidated_raw.csv"
+    path = "./data/training/all_consolidated_raw.csv"
     all_data.to_csv(path)
 
 def train():

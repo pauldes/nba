@@ -29,13 +29,13 @@ def load_model():
 def load_player_stats(season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_player_stats(subset_by_seasons=[season], subset_by_stat_types=['per_game', 'per_36min', 'per_100poss', 'advanced'])
-    stats.to_csv("./data/current_player_stats.csv")
+    stats.to_csv("./data/current/current_player_stats.csv")
     return stats
 @st.cache
 def load_team_stats(season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_team_standings(subset_by_seasons=[season])
-    stats.to_csv("./data/current_team_stats.csv")
+    stats.to_csv("./data/current/current_team_stats.csv")
     return stats
 @st.cache
 def consolidate_stats(team_stats, player_stats):
@@ -43,7 +43,7 @@ def consolidate_stats(team_stats, player_stats):
     team_stats["SEASON"] = team_stats["SEASON"].astype(int)
     stats = player_stats.merge(team_stats, how='inner', on=["TEAM", "SEASON"])
     stats = stats.set_index("PLAYER", drop=True)
-    stats.to_csv("./data/current_consolidated_raw.csv")
+    stats.to_csv("./data/current/current_consolidated_raw.csv")
     return stats
 def load_2020_preds():
     preds = pandas.read_csv("./static/data/2020_dataset_predictions.csv")
@@ -68,11 +68,14 @@ def clean_data(data):
     data["MP"] = data["MP"].astype(float)
     data = data[data["MP"] >= 20.0]
     return data
-def save_predictions(data, day, month, year):
+def save_predictions(series, day, month, year, filter_above=0.01):
+    day = str(day).rjust(2, "0")
+    month = str(month).rjust(2, "0")
     filename = f"{year}_{month}_{day}.csv"
-    folder = "./data/"
+    folder = "./data/predictions/"
+    series = series[series>filter_above]
     if filename not in os.listdir(folder):
-        data.to_csv(filename)
+        series.to_csv(folder + filename)
 
 def predict(data, model):
     # TODO get automatically from training step.. or keep all 
@@ -113,7 +116,7 @@ predictions = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
-save_predictions(dataset[["PRED", "PRED_RANK"]], day, month, year)
+save_predictions(dataset["PRED"], day, month, year)
 
 # Sidebar
 st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')

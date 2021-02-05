@@ -1,6 +1,7 @@
 /nba/__pycache__/
 /.vscode/
-/data/*.csv
+/data/training/*.csv
+/data/predictions/*.csv
 /mlruns/
 Pipfile
 Pipfile.lock
