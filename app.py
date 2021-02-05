@@ -32,7 +32,7 @@ def consolidate_stats(team_stats, player_stats):
     player_stats["SEASON"] = player_stats["SEASON"].astype(int)
     team_stats["SEASON"] = team_stats["SEASON"].astype(int)
     stats = player_stats.merge(team_stats, how='inner', on=["TEAM", "SEASON"])
-    #stats = stats.set_index("player_season_team", drop=True)
+    stats = stats.set_index("PLAYER", drop=True)
     stats.to_csv("./data/current_consolidated_raw.csv")
     return stats
 def load_2020_preds():
@@ -85,15 +85,16 @@ dataset = clean_data(current_consolidated_raw)
 initial_columns = list(dataset.columns)
 predictions = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
+print(dataset.columns)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv1"] = evaluate.softmax(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
 dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv1"] = 0.
 dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv2"] = evaluate.share(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
 dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv2"] = 0.
-dataset["CONFIDENCEv1"] = dataset["CONFIDENCEv1"].map('{:,.2f}%'.format)
-dataset["CONFIDENCEv2"] = dataset["CONFIDENCEv2"].map('{:,.2f}%'.format)
-dataset = dataset[["CONFIDENCEv1", "CONFIDENCEv2"] + initial_columns]
+dataset["MVP probability"] = dataset["CONFIDENCEv2"].map('{:,.2f}%'.format)
 dataset = dataset.sort_values(by="PRED", ascending=False)
+show_columns = ["MVP probability"] + initial_columns[:]
+dataset = dataset[show_columns]
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
