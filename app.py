@@ -71,19 +71,18 @@ def predict(data, model):
     cat = ['POS', 'CONF']
     # TODO get automatically from training step.. or keep all 
     num = ['2P%', '2PA_per_36min', '3P%', '3PAR_advanced', '3P_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FGA_per_game', 'FG_per_36min', 'FT%', 'FTA_per_100poss', 'FTR_advanced', 'G', 'MP', 'OBPM_advanced', 'ORB_per_36min', 'ORTG_per_100poss', 'PF_per_100poss', 'PF_per_game', 'STL_per_36min', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB%_advanced', 'TS%_advanced', 'USG%_advanced', 'WS/48_advanced', 'WS_advanced', 'W', 'W/L%', 'GB', 'PL', 'PA/G', 'CONF_RANK']
-    min_max_scaling = True
+    min_max_scaling = False
     data_processed_features_only, _ = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
     # TODO get automatically from training step
-    print(data_processed_features_only.columns)
-    features =  ['3PAR_advanced', 'DRTG_per_100poss', 'DBPM_advanced', 'FTR_advanced',
-       'GB', 'AGE', 'DWS_advanced', 'OBPM_advanced', '2PA_per_36min',
-       'TS%_advanced', 'FT%', 'PA/G', 'MP', 'TOV_per_game', 'STL_per_36min',
-       'G', 'TOV_per_36min', 'PF_per_game', 'WS/48_advanced', '3P_per_game',
-       'ORB_per_36min', 'FG_per_36min', 'FG%', 'PF_per_100poss',
-       'FGA_per_game', 'FTA_per_100poss', 'TOV%_advanced', '3P%', 'W/L%',
-       'WS_advanced', 'BLK_per_36min', 'W', 'TRB%_advanced', 'CONF_RANK',
-       'DRB_per_game', 'ORTG_per_100poss', '2P%', 'PL', 'AST%_advanced',
-       'USG%_advanced', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG',
+    features =  ['W', 'STL_per_36min', 'DRB_per_game', 'PL', 'TS%_advanced',
+       'TOV%_advanced', 'FG%', 'FT%', 'GB', 'PF_per_100poss', '2P%', 'PA/G',
+       '2PA_per_36min', '3P%', 'FG_per_36min', 'ORB_per_36min',
+       'TRB%_advanced', 'TOV_per_game', 'OBPM_advanced', 'CONF_RANK', 'G',
+       '3PAR_advanced', 'FTA_per_100poss', 'FGA_per_game', 'TOV_per_36min',
+       'MP', 'AST%_advanced', 'AGE', 'PF_per_game', 'USG%_advanced',
+       'DWS_advanced', 'ORTG_per_100poss', 'DBPM_advanced', 'WS/48_advanced',
+       'FTR_advanced', 'DRTG_per_100poss', '3P_per_game', 'BLK_per_36min',
+       'WS_advanced', 'W/L%', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG',
        'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
     X = data_processed_features_only[features]
     preds = model.predict(X)
