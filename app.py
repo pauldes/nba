@@ -57,7 +57,15 @@ def predict(data, model):
     num = ['2P%', '2P_per_game', '3P%', '3PAR_advanced', '3PA_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FG_per_100poss', 'FT%', 'FTR_advanced', 'FT_per_game', 'G', 'MP', 'OBPM_advanced', 'ORB%_advanced', 'ORTG_per_100poss', 'OWS_advanced', 'PF_per_36min', 'PF_per_game', 'PTS_per_game', 'STL_per_game', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB_per_36min', 'TS%_advanced', 'WS/48_advanced', 'GB', 'PW', 'PL', 'PA/G', 'CONF_RANK']
     min_max_scaling = True
     data_processed_features_only, _ = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
-    features = ['OWS_advanced', 'ORTG_per_100poss', 'STL_per_game', 'PW', 'TOV%_advanced', 'FG_per_100poss', 'DRTG_per_100poss', 'TOV_per_36min', 'PF_per_36min', 'CONF_RANK', 'OBPM_advanced', 'ORB%_advanced', 'FT%', 'DBPM_advanced', 'PTS_per_game', 'FTR_advanced', 'BLK_per_36min', 'FT_per_game', 'MP', 'AST%_advanced', '3PAR_advanced', 'PF_per_game', '2P_per_game', 'FG%', 'TOV_per_game', 'DRB_per_game', 'TS%_advanced', 'PA/G', 'PL', '2P%', 'DWS_advanced', '3PA_per_game', 'GB', 'TRB_per_36min', '3P%', 'AGE', 'G', 'WS/48_advanced', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG', 'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
+    features =  ['FG_per_100poss', 'MP', 'FTR_advanced', 'PF_per_36min', '3P%',
+       'TRB_per_36min', 'DWS_advanced', 'AST%_advanced', 'TS%_advanced', '2P%',
+       'CONF_RANK', 'OBPM_advanced', 'FT%', 'GB', 'FT_per_game', 'PW', 'FG%',
+       'PA/G', 'AGE', 'PF_per_game', 'OWS_advanced', 'TOV_per_36min',
+       'TOV%_advanced', 'TOV_per_game', 'ORB%_advanced', 'G', 'WS/48_advanced',
+       '3PAR_advanced', 'PL', 'DRB_per_game', 'PTS_per_game', '2P_per_game',
+       'STL_per_game', 'BLK_per_36min', 'ORTG_per_100poss', 'DRTG_per_100poss',
+       '3PA_per_game', 'DBPM_advanced', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF',
+       'POS_SG', 'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
     X = data_processed_features_only[features]
     preds = model.predict(X)
     return preds
