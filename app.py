@@ -19,7 +19,7 @@ year = datetime.datetime.now().year
 st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
 
 # Functions
-@st.cache
+#@st.cache
 def load_model():
     return joblib.load('static/model/model.joblib')
 @st.cache
