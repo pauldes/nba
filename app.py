@@ -67,13 +67,14 @@ def clean_data(data):
     return data.fillna(0.0)
 
 def predict(data, model):
-    # TODO get automatically
+    # TODO get automatically from training step.. or keep all 
     cat = ['POS', 'CONF']
-    # TODO get automatically
-    num = ['2P%', '2P_per_game', '3P%', '3PAR_advanced', '3PA_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FG_per_100poss', 'FT%', 'FTR_advanced', 'FT_per_game', 'G', 'MP', 'OBPM_advanced', 'ORB%_advanced', 'ORTG_per_100poss', 'OWS_advanced', 'PF_per_36min', 'PF_per_game', 'PTS_per_game', 'STL_per_game', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB_per_36min', 'TS%_advanced', 'WS/48_advanced', 'GB', 'PW', 'PL', 'PA/G', 'CONF_RANK']
+    # TODO get automatically from training step.. or keep all 
+    num = ['2P%', '2PA_per_36min', '3P%', '3PAR_advanced', '3P_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FGA_per_game', 'FG_per_36min', 'FT%', 'FTA_per_100poss', 'FTR_advanced', 'G', 'MP', 'OBPM_advanced', 'ORB_per_36min', 'ORTG_per_100poss', 'PF_per_100poss', 'PF_per_game', 'STL_per_36min', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB%_advanced', 'TS%_advanced', 'USG%_advanced', 'WS/48_advanced', 'WS_advanced', 'W', 'W/L%', 'GB', 'PL', 'PA/G', 'CONF_RANK']
     min_max_scaling = True
     data_processed_features_only, _ = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
     # TODO get automatically from training step
+    print(data_processed_features_only.columns)
     features =  ['3PAR_advanced', 'DRTG_per_100poss', 'DBPM_advanced', 'FTR_advanced',
        'GB', 'AGE', 'DWS_advanced', 'OBPM_advanced', '2PA_per_36min',
        'TS%_advanced', 'FT%', 'PA/G', 'MP', 'TOV_per_game', 'STL_per_36min',
