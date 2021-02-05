@@ -20,6 +20,9 @@ st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout
 
 # Functions
 @st.cache
+def load_model():
+    return joblib.load('static/model/model.joblib')
+@st.cache
 def load_player_stats(season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_player_stats(subset_by_seasons=[season], subset_by_stat_types=['per_game', 'per_36min', 'per_100poss', 'advanced'])
@@ -97,7 +100,7 @@ preds_test = load_test_preds()
 num_test_seasons = len(preds_test)
 mvp_found_pct = mvp_found_pct(preds_test)
 avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
-model = joblib.load('static/model/model.joblib')
+model = load_model()
 dataset = clean_data(current_consolidated_raw)
 # Predict
 initial_columns = list(dataset.columns)
