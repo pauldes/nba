@@ -26,13 +26,13 @@ st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout
 def load_model():
     return joblib.load('static/model/model.joblib')
 @st.cache
-def load_player_stats(season):
+def load_player_stats(day, month, season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_player_stats(subset_by_seasons=[season], subset_by_stat_types=['per_game', 'per_36min', 'per_100poss', 'advanced'])
     stats.to_csv("./data/current/current_player_stats.csv")
     return stats
 @st.cache
-def load_team_stats(season):
+def load_team_stats(day, month, season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_team_standings(subset_by_seasons=[season])
     stats.to_csv("./data/current/current_team_stats.csv")
@@ -100,8 +100,8 @@ def predict(data, model):
     return preds
 
 # Init page
-current_team_stats = load_team_stats(year).copy()
-current_player_stats = load_player_stats(year).copy()
+current_team_stats = load_team_stats(day, month, year).copy()
+current_player_stats = load_player_stats(day, month, year).copy()
 current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats)
 preds_2020 = load_2020_preds()
 preds_test = load_test_preds()
