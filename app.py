@@ -4,7 +4,7 @@ import streamlit as st
 import pandas
 import joblib
 
-from nba import br_extractor, preprocess
+from nba import br_extractor, preprocess, evaluate
 
 # Constants
 logo_url = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
@@ -81,9 +81,19 @@ mvp_found_pct = mvp_found_pct(preds_test)
 avg_real_mvp_rank = avg_real_mvp_rank(preds_test)
 model = joblib.load('static/model/model.joblib')
 dataset = clean_data(current_consolidated_raw)
+# Predict
+initial_columns = list(dataset.columns)
 predictions = predict(dataset, model)
-dataset["PREDS"] = predictions
-dataset = dataset.sort_values(by="PREDS", ascending=False)
+dataset.loc[:, "PRED"] = predictions
+dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
+dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv1"] = evaluate.softmax(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
+dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv1"] = 0.
+dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv2"] = evaluate.share(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
+dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv2"] = 0.
+dataset["CONFIDENCEv1"] = dataset["CONFIDENCEv1"].map('{:,.2f}%'.format)
+dataset["CONFIDENCEv2"] = dataset["CONFIDENCEv2"].map('{:,.2f}%'.format)
+dataset = dataset[["CONFIDENCEv1", "CONFIDENCEv2"] + initial_columns]
+dataset = dataset.sort_values(by="PRED", ascending=False)
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
