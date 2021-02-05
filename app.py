@@ -7,12 +7,16 @@ import joblib
 from nba import br_extractor, preprocess, evaluate
 
 # Constants
-logo_url = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
+LOGO_URL = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
+PAGE_PREDICTIONS = "Current year predictions"
+PAGE_PERFORMANCE = "Model performance analysis"
+CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
+CONFIDENCE_MODE_SHARE = "Percentage-based"
+
 year = datetime.datetime.now().year
 
 # Page properties
-st.set_page_config(page_title='NBA MVP Prediction', page_icon = logo_url, layout = 'centered', initial_sidebar_state = 'auto')
-st.title(f'Predicting the NBA MVP.')
+st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
 
 # Functions
 @st.cache
@@ -98,66 +102,65 @@ dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 
-CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
-CONFIDENCE_MODE_SHARE = "Percentage-based"
-
 # Sidebar
-st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
+st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.sidebar.text(f"Season : {year-1}-{year}")
 st.sidebar.markdown(f'''
 **Predicting the NBA Most Valuable Player using machine learning.**
-
-Expected performance of the model, as calculated on the test set ({num_test_seasons} seasons):
-- **{mvp_found_pct}** of MVPs correctly found
-- Real MVP is ranked in average **{avg_real_mvp_rank}**
-
+''')
+navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
+st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
-# Main content
-#st.header("Current year predictions")
-col1, col2 = st.beta_columns(2)
-col1.header("Current year predictions")
-#col1.subheader("Predicted top 3")
-col2.header("⠀")
-col2.subheader("Prediction parameters")
-confidence_mode = col2.radio('MVP probability estimation method', [CONFIDENCE_MODE_SHARE, CONFIDENCE_MODE_SOFTMAX])
-compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=100, value=10, step=5)
-if confidence_mode == CONFIDENCE_MODE_SOFTMAX:
-    dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.softmax(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
-else:
-    dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.share(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
-dataset.loc[dataset.PRED_RANK > compute_probs_based_on_top_n, "MVP probability"] = 0.
-dataset["MVP probability"] = dataset["MVP probability"].map('{:,.2f}%'.format)
-dataset["MVP rank"] = dataset["PRED_RANK"]
-show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
-dataset = dataset[show_columns]
-st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
-st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
+st.title(f'Predicting the NBA MVP.')
 
-top_3 = dataset["MVP probability"][:3].to_dict()
+if navigation_page == PAGE_PREDICTIONS:
 
-for n, player_name in enumerate(top_3):
-    title_level = "###" + n*"#"
-    col1.markdown(f'''
-    {title_level} #{n+1} : **{player_name}** 
-    
-    *{top_3[player_name]} chance to win MVP*
+    st.header("Current year predictions")
+    col1, col2 = st.beta_columns(2)
+    col2.subheader("Prediction parameters")
+    confidence_mode = col2.radio('MVP probability estimation method', [CONFIDENCE_MODE_SHARE, CONFIDENCE_MODE_SOFTMAX])
+    compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=100, value=10, step=5)
+    if confidence_mode == CONFIDENCE_MODE_SOFTMAX:
+        dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.softmax(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
+    else:
+        dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.share(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
+    dataset.loc[dataset.PRED_RANK > compute_probs_based_on_top_n, "MVP probability"] = 0.
+    dataset["MVP probability"] = dataset["MVP probability"].map('{:,.2f}%'.format)
+    dataset["MVP rank"] = dataset["PRED_RANK"]
+    show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
+    dataset = dataset[show_columns]
+    st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
+    st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
+
+    top_3 = dataset["MVP probability"][:3].to_dict()
+
+    for n, player_name in enumerate(top_3):
+        title_level = "###" + n*"#"
+        col1.markdown(f'''
+        {title_level} #{n+1} : **{player_name}** 
+        
+        *{top_3[player_name]} chance to win MVP*
+        ''')
+
+elif navigation_page == PAGE_PERFORMANCE:
+
+    st.header("Model performance analysis")
+    st.subheader(f"Test predictions ({num_test_seasons} seasons)")
+    st.markdown('''
+    Predictions of the model on the unseen, test dataset.
     ''')
+    st.markdown(f'''
+    - **{mvp_found_pct}** of MVPs correctly found
+    - Real MVP is ranked in average **{avg_real_mvp_rank}**
+    ''')
+    st.dataframe(data=preds_test, width=None, height=None)
+    st.subheader("Year 2020")
+    st.markdown('''
+    Predictions of the model on the unseen, 2020 season dataset.
+    ''')
+    st.dataframe(data=preds_2020, width=None, height=None)
 
-
-st.header("Model performance analysis")
-st.subheader(f"Test predictions ({num_test_seasons} seasons)")
-st.markdown('''
-Predictions of the model on the unseen, test dataset.
-''')
-st.markdown(f'''
-- **{mvp_found_pct}** of MVPs correctly found
-- Real MVP is ranked in average **{avg_real_mvp_rank}**
-''')
-st.dataframe(data=preds_test, width=None, height=None)
-st.subheader("Year 2020")
-st.markdown('''
-Predictions of the model on the unseen, 2020 season dataset.
-''')
-st.dataframe(data=preds_2020, width=None, height=None)
+else:
+    st.text("Unknown page selected.")
