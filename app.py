@@ -12,7 +12,7 @@ year = datetime.datetime.now().year
 
 # Page properties
 st.set_page_config(page_title='NBA MVP Prediction', page_icon = logo_url, layout = 'centered', initial_sidebar_state = 'auto')
-st.title(f'Predicting the MVP.')
+st.title(f'Predicting the NBA MVP.')
 
 # Functions
 @st.cache
@@ -95,17 +95,11 @@ dataset = clean_data(current_consolidated_raw)
 initial_columns = list(dataset.columns)
 predictions = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
-print(dataset.columns)
-dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
-dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv1"] = evaluate.softmax(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
-dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv1"] = 0.
-dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv2"] = evaluate.share(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
-dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv2"] = 0.
-dataset["MVP probability"] = dataset["CONFIDENCEv2"].map('{:,.2f}%'.format)
-dataset["MVP rank"] = dataset["PRED_RANK"]
 dataset = dataset.sort_values(by="PRED", ascending=False)
-show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
-dataset = dataset[show_columns]
+dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
+
+CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
+CONFIDENCE_MODE_SHARE = "Percentage-based"
 
 # Sidebar
 st.sidebar.image(logo_url, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -121,20 +115,38 @@ Expected performance of the model, as calculated on the test set ({num_test_seas
 ''')
 
 # Main content
-st.header("Current year predictions")
-st.dataframe(data=dataset.head(10), width=None, height=None)
-st.header("Data retrieved")
-st.subheader("Player stats")
-st.markdown('''
-These stats describe the player individual accomplishments.
-''')
-st.dataframe(data=current_player_stats.sample(10), width=None, height=None)
-st.subheader("Team stats")
-st.markdown('''
-These stats describe the team accomplishments.
-''')
-st.dataframe(data=current_team_stats.sample(10), width=None, height=None)
-st.header("Model performance")
+#st.header("Current year predictions")
+col1, col2 = st.beta_columns(2)
+col1.header("Current year predictions")
+#col1.subheader("Predicted top 3")
+col2.header("⠀")
+col2.subheader("Prediction parameters")
+confidence_mode = col2.radio('MVP probability estimation method', [CONFIDENCE_MODE_SHARE, CONFIDENCE_MODE_SOFTMAX])
+compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=100, value=10, step=5)
+if confidence_mode == CONFIDENCE_MODE_SOFTMAX:
+    dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.softmax(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
+else:
+    dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.share(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
+dataset.loc[dataset.PRED_RANK > compute_probs_based_on_top_n, "MVP probability"] = 0.
+dataset["MVP probability"] = dataset["MVP probability"].map('{:,.2f}%'.format)
+dataset["MVP rank"] = dataset["PRED_RANK"]
+show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
+dataset = dataset[show_columns]
+st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
+st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
+
+top_3 = dataset["MVP probability"][:3].to_dict()
+print(top_3)
+for n, player_name in enumerate(top_3):
+    title_level = "###" + n*"#"
+    col1.markdown(f'''
+    {title_level} #{n+1} : **{player_name}** 
+    
+    *{top_3[player_name]} chance to win MVP*
+    ''')
+
+
+st.header("Model performance analysis")
 st.subheader(f"Test predictions ({num_test_seasons} seasons)")
 st.markdown('''
 Predictions of the model on the unseen, test dataset.
