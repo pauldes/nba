@@ -50,6 +50,16 @@ def avg_real_mvp_rank(test_dataset_predictions):
     return "%.2f" % metrics
 def clean_data(data):
     #TODO : reuse cleaning process
+    data = data.fillna(0.0)
+
+    data["G"] = data["G"].astype(int)
+    data = data[data["G"] >= int(0.4*data["G"].max())]
+
+    data["CONF_RANK"] = data["CONF_RANK"].astype(int)
+    data = data[data["CONF_RANK"] <= 8]
+
+    data["MP"] = data["MP"].astype(float)
+    data = data[data["MP"] >= 20.0]
     return data.fillna(0.0)
 
 def predict(data, model):
@@ -92,8 +102,9 @@ dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv1"] = 0.
 dataset.loc[dataset.PRED_RANK <= 10., "CONFIDENCEv2"] = evaluate.share(dataset[dataset.PRED_RANK <= 10.]["PRED"]) * 100
 dataset.loc[dataset.PRED_RANK > 10., "CONFIDENCEv2"] = 0.
 dataset["MVP probability"] = dataset["CONFIDENCEv2"].map('{:,.2f}%'.format)
+dataset["MVP rank"] = dataset["PRED_RANK"]
 dataset = dataset.sort_values(by="PRED", ascending=False)
-show_columns = ["MVP probability"] + initial_columns[:]
+show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
 dataset = dataset[show_columns]
 
 # Sidebar
