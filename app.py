@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import streamlit as st
 import pandas
@@ -14,6 +15,8 @@ CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
 CONFIDENCE_MODE_SHARE = "Percentage-based"
 
 year = datetime.datetime.now().year
+month = datetime.datetime.now().month
+day = datetime.datetime.now().day
 
 # Page properties
 st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
@@ -58,16 +61,18 @@ def avg_real_mvp_rank(test_dataset_predictions):
 def clean_data(data):
     #TODO : reuse cleaning process
     data = data.fillna(0.0)
-
     data["G"] = data["G"].astype(int)
     data = data[data["G"] >= int(0.4*data["G"].max())]
-
     data["CONF_RANK"] = data["CONF_RANK"].astype(int)
     data = data[data["CONF_RANK"] <= 8]
-
     data["MP"] = data["MP"].astype(float)
     data = data[data["MP"] >= 20.0]
-    return data.fillna(0.0)
+    return data
+def save_predictions(data, day, month, year):
+    filename = f"{year}_{month}_{day}.csv"
+    folder = "./data/"
+    if filename not in os.listdir(folder):
+        data.to_csv(filename)
 
 def predict(data, model):
     # TODO get automatically from training step.. or keep all 
@@ -108,6 +113,7 @@ predictions = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
+save_predictions(dataset[["PRED", "PRED_RANK"]], day, month, year)
 
 # Sidebar
 st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')

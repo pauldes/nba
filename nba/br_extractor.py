@@ -192,7 +192,7 @@ class BRExtractor():
                 try:
                     stat_type_df = self.get_roster_stats_v2(season, stat_type)
                 except Exception as e:
-                    print("Could not retrieve data. Are you sure", team,"played in season", str(season), "?", e)
+                    print("Could not retrieve data. Are you sure NBA was played in season", str(season), "?", e)
                 else:
                     stat_type_df.columns = [col + "_" + str(stat_type) if col not in do_not_suffix else col for col in stat_type_df.columns]
                     stat_type_df.loc[:, "player_season_team"] = stat_type_df["PLAYER"].str.replace(" ", "") + "_" + stat_type_df["SEASON"] + "_" + stat_type_df["TEAM"]
