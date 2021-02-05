@@ -136,7 +136,7 @@ st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
 st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
 
 top_3 = dataset["MVP probability"][:3].to_dict()
-print(top_3)
+
 for n, player_name in enumerate(top_3):
     title_level = "###" + n*"#"
     col1.markdown(f'''
