@@ -75,7 +75,7 @@ def save_predictions(series, day, month, year, filter_above=0.01):
     folder = "./data/predictions/"
     series = series[series>filter_above]
     if filename not in os.listdir(folder):
-        series.to_csv(folder + filename)
+        series.to_csv(folder + filename, header=False) 
 
 def predict(data, model):
     # TODO get automatically from training step.. or keep all 
