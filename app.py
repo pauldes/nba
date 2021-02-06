@@ -40,6 +40,7 @@ def create_data_folder(day, month, season):
 def load_player_stats(day, month, season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_player_stats(subset_by_seasons=[season], subset_by_stat_types=['per_game', 'per_36min', 'per_100poss', 'advanced'])
+    stats["SEASON"] = stats["SEASON"].astype(int)
     day = str(day).rjust(2, "0")
     month = str(month).rjust(2, "0")
     folder = f"./data/current/{season}_{month}_{day}/"
@@ -52,6 +53,7 @@ def load_player_stats(day, month, season):
 def load_team_stats(day, month, season):
     extractor = br_extractor.BRExtractor()
     stats = extractor.get_team_standings(subset_by_seasons=[season])
+    stats["SEASON"] = stats["SEASON"].astype(int)
     day = str(day).rjust(2, "0")
     month = str(month).rjust(2, "0")
     folder = f"./data/current/{season}_{month}_{day}/"
@@ -62,8 +64,6 @@ def load_team_stats(day, month, season):
 
 @st.cache
 def consolidate_stats(team_stats, player_stats, day, month, season):
-    player_stats["SEASON"] = player_stats["SEASON"].astype(int)
-    team_stats["SEASON"] = team_stats["SEASON"].astype(int)
     stats = player_stats.merge(team_stats, how='inner', on=["TEAM", "SEASON"])
     stats = stats.set_index("PLAYER", drop=True)
     day = str(day).rjust(2, "0")
@@ -130,9 +130,9 @@ def predict(data, model):
 
 # Init page
 create_data_folder(day, month, year)
-current_team_stats = load_team_stats(day, month, year).copy()
-current_player_stats = load_player_stats(day, month, year).copy()
-current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats, day, month, year)
+current_team_stats = load_team_stats(day, month, year)
+current_player_stats = load_player_stats(day, month, year)
+current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats, day, month, year).copy()
 preds_2020 = load_2020_preds()
 preds_test = load_test_preds()
 num_test_seasons = len(preds_test)
