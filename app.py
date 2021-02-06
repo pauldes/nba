@@ -130,8 +130,8 @@ def predict(data, model):
 
 # Init page
 create_data_folder(day, month, year)
-current_team_stats = load_team_stats(day, month, year)
-current_player_stats = load_player_stats(day, month, year)
+current_team_stats = load_team_stats(day, month, year).copy()
+current_player_stats = load_player_stats(day, month, year).copy()
 current_consolidated_raw = consolidate_stats(current_team_stats, current_player_stats, day, month, year)
 preds_2020 = load_2020_preds()
 preds_test = load_test_preds()
@@ -149,16 +149,22 @@ dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
 
 # Sidebar
-st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
+#st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.sidebar.text(f"Season : {year-1}-{year}")
 st.sidebar.markdown(f'''
 **Predicting the NBA Most Valuable Player using machine learning.**
 ''')
 navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
 st.sidebar.markdown(f'''
+**How does it work ?**
+
+Work in progress...
+''')
+st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
+st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.title(f'Predicting the NBA MVP.')
 
 if navigation_page == PAGE_PREDICTIONS:
