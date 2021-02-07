@@ -4,6 +4,7 @@ import os, errno
 import streamlit as st
 import pandas
 import joblib
+import numpy
 
 from nba import br_extractor, preprocess, evaluate
 
@@ -14,7 +15,7 @@ PAGE_PERFORMANCE = "Model performance analysis"
 CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
 CONFIDENCE_MODE_SHARE = "Percentage-based"
 
-year = datetime.datetime.now().year
+year = datetime.datetime.now().year #TODO : season and year may be different
 month = datetime.datetime.now().month
 day = datetime.datetime.now().day
 
@@ -25,6 +26,22 @@ st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout
 #@st.cache
 def load_model():
     return joblib.load('static/model/model.joblib')
+
+@st.cache
+def build_history(day, month, season):
+    folder = "./data/predictions/"
+    stats = pandas.DataFrame(columns=["player", "date", "prediction"])
+    for filename in os.listdir(folder):
+        if str(filename).endswith(".csv"):
+            predictions = pandas.read_csv(folder + filename, header=None, index_col=None, names=["player", "prediction"], dtype={"player": str, "prediction": float})
+            predictions["date"] = pandas.to_datetime(filename, format='%Y_%m_%d.csv', errors='ignore')
+            #predictions["date"] = filename[:10]
+            stats = stats.append(predictions, sort=False)
+    stats = stats.pivot(index='date', columns='player', values='prediction')
+    stats = stats.fillna(0.0)
+    stats.columns = [''+col for col in stats.columns.values]
+    return stats
+
 
 def create_data_folder(day, month, season):
     day = str(day).rjust(2, "0")
@@ -147,6 +164,8 @@ dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
+# Build history chart
+history = build_history(day, month, year)
 
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -158,7 +177,7 @@ navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFOR
 st.sidebar.markdown(f'''
 **How does it work ?**
 
-Work in progress...
+A statistical model is fitted on historical data (player and team stats, and MVP voting results). It is now used to predict this season MVP based on current data.
 ''')
 st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
@@ -183,8 +202,7 @@ if navigation_page == PAGE_PREDICTIONS:
     dataset["MVP rank"] = dataset["PRED_RANK"]
     show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
     dataset = dataset[show_columns]
-    st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
-    st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
+    
 
     top_3 = dataset["MVP probability"][:3].to_dict()
 
@@ -195,6 +213,12 @@ if navigation_page == PAGE_PREDICTIONS:
         
         *{top_3[player_name]} chance to win MVP*
         ''')
+
+    st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
+    st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
+
+    st.subheader(f"Predictions evolution")
+    st.line_chart(history)
 
 elif navigation_page == PAGE_PERFORMANCE:
 

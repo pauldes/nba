@@ -2,6 +2,7 @@
 /.vscode/
 /data/training/*.csv
 /data/predictions/*.csv
+/data/current/*/*.csv
 /mlruns/
 Pipfile
 Pipfile.lock
