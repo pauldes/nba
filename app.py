@@ -20,7 +20,8 @@ month = datetime.datetime.now().month
 day = datetime.datetime.now().day
 
 # Page properties
-st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
+#st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
+st.set_page_config(page_title="Predicting the NBA MVP", page_icon = ":basketball:", layout = 'centered', initial_sidebar_state = 'auto')
 
 # Functions
 #@st.cache
@@ -29,6 +30,8 @@ def load_model():
 
 @st.cache
 def build_history(day, month, season):
+    # TODO use a database or other persistent storage
+    # For now files are deleted at each deploy
     folder = "./data/predictions/"
     stats = pandas.DataFrame(columns=["player", "date", "prediction"])
     for filename in os.listdir(folder):
@@ -37,9 +40,14 @@ def build_history(day, month, season):
             predictions["date"] = pandas.to_datetime(filename, format='%Y_%m_%d.csv', errors='ignore')
             #predictions["date"] = filename[:10]
             stats = stats.append(predictions, sort=False)
-    stats = stats.pivot(index='date', columns='player', values='prediction')
+    return stats
+
+def prepare_history(stats, keep_top_n):
+    keep_players = stats.sort_values(by=["date", "prediction"], ascending=False)["player"].to_list()[:keep_top_n]
+    stats = stats[stats["player"].isin(keep_players)]
+    #stats = stats.pivot(index='date', columns='player', values='prediction')
     stats = stats.fillna(0.0)
-    stats.columns = [''+col for col in stats.columns.values]
+    #stats.columns = [''+col for col in stats.columns.values]
     return stats
 
 
@@ -164,8 +172,6 @@ dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
-# Build history chart
-history = build_history(day, month, year)
 
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
@@ -177,19 +183,21 @@ navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFOR
 st.sidebar.markdown(f'''
 **How does it work ?**
 
-A statistical model is fitted on historical data (player and team stats, and MVP voting results). It is now used to predict this season MVP based on current data.
+A statistical regression model is fitted on historical data (player and team stats, and MVP voting results). It is then used to predict this season MVP based on current data.
 ''')
 st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
-st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-st.title(f'Predicting the NBA MVP.')
+#st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
+st.title(f'🏀 Predicting the NBA MVP')
 
 if navigation_page == PAGE_PREDICTIONS:
 
     st.header("Current year predictions")
     col1, col2 = st.beta_columns(2)
+    #col2.markdown("Prediction parameters")
+    col1.subheader("Predicted top 3")
     col2.subheader("Prediction parameters")
     confidence_mode = col2.radio('MVP probability estimation method', [CONFIDENCE_MODE_SHARE, CONFIDENCE_MODE_SOFTMAX])
     compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=100, value=10, step=5)
@@ -205,20 +213,36 @@ if navigation_page == PAGE_PREDICTIONS:
     
 
     top_3 = dataset["MVP probability"][:3].to_dict()
+    emojis = ["🥇", "🥈", "🥉"]
 
     for n, player_name in enumerate(top_3):
         title_level = "###" + n*"#"
         col1.markdown(f'''
-        {title_level} #{n+1} : **{player_name}** 
+        #### {emojis[n]} **{player_name}** 
         
         *{top_3[player_name]} chance to win MVP*
         ''')
 
-    st.subheader(f"Predicted top {compute_probs_based_on_top_n} MVP ranking")
+    st.subheader(f"Predicted top {compute_probs_based_on_top_n}")
     st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
 
-    st.subheader(f"Predictions evolution")
-    st.line_chart(history)
+    st.subheader(f"Predictions history")
+    keep_top_n = st.slider('Number of players to show', min_value=5, max_value=15, value=5, step=1)
+    history = build_history(day, month, year)
+    prepared_history = prepare_history(history, keep_top_n)
+    #st.area_chart(prepared_history)
+    st.vega_lite_chart(prepared_history, {
+        "mark": {
+            "type": "line",
+            "point": True
+        },
+        "encoding": {
+            "x": {"timeUnit": "yearmonthdate", "field": "date"},
+            "y": {"field": "prediction", "type": "quantitative"},
+            "color": {"field": "player", "type": "nominal"}
+        }
+    }, width=0, height=0, use_container_width=True)
+    #vega_lite_chart
 
 elif navigation_page == PAGE_PERFORMANCE:
 
