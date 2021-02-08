@@ -175,6 +175,7 @@ save_predictions(dataset["PRED"], day, month, year)
 
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
+st.sidebar.title(f'🏀')
 st.sidebar.text(f"Season : {year-1}-{year}")
 st.sidebar.markdown(f'''
 **Predicting the NBA Most Valuable Player using machine learning.**
@@ -185,7 +186,8 @@ st.sidebar.markdown(f'''
 
 A statistical regression model is fitted on historical data (player and team stats, and MVP voting results). 
 It is then used to predict this season MVP based on current data.
-The model predicts the *award share* (the number of points a player received for MVP award over the total points of all first-place votes). This share can be converted to a probability using various methods (see *Predicitons parameters*).
+The model predicts the *award share* (the number of points a player received for MVP award over the total points of all first-place votes). 
+This share can then be converted to a chance/probability using various methods (see *Predictions parameters*).
 ''')
 st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
