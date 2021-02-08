@@ -183,7 +183,9 @@ navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFOR
 st.sidebar.markdown(f'''
 **How does it work ?**
 
-A statistical regression model is fitted on historical data (player and team stats, and MVP voting results). It is then used to predict this season MVP based on current data.
+A statistical regression model is fitted on historical data (player and team stats, and MVP voting results). 
+It is then used to predict this season MVP based on current data.
+The model predicts the *award share* (the number of points a player received for MVP award over the total points of all first-place votes). This share can be converted to a probability using various methods (see *Predicitons parameters*).
 ''')
 st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
