@@ -230,7 +230,7 @@ if navigation_page == PAGE_PREDICTIONS:
     st.subheader(f"Predicted top {compute_probs_based_on_top_n}")
     st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
 
-    st.subheader(f"Predictions history")
+    st.subheader(f"Share predictions history")
     keep_top_n = st.slider('Number of players to show', min_value=5, max_value=15, value=5, step=1)
     history = build_history(day, month, year)
     prepared_history = prepare_history(history, keep_top_n)
@@ -238,7 +238,8 @@ if navigation_page == PAGE_PREDICTIONS:
     st.vega_lite_chart(prepared_history, {
         "mark": {
             "type": "line",
-            "point": True
+            "point": True,
+            "tooltip": True
         },
         "encoding": {
             "x": {"timeUnit": "yearmonthdate", "field": "date"},
