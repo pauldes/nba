@@ -175,10 +175,9 @@ save_predictions(dataset["PRED"], day, month, year)
 
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-st.sidebar.title(f'🏀')
 st.sidebar.text(f"Season : {year-1}-{year}")
 st.sidebar.markdown(f'''
-**Predicting the NBA Most Valuable Player using machine learning.**
+🏀 **Predicting the NBA Most Valuable Player using machine learning.**
 ''')
 navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
 st.sidebar.markdown(f'''
