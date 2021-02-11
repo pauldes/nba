@@ -1,8 +1,10 @@
 /nba/__pycache__/
 /.vscode/
 /data/training/*.csv
-/data/predictions/*.csv
 /data/current/*/*.csv
 /mlruns/
 Pipfile
 Pipfile.lock
+
+# Temp solutions for storing predictions, TOTO use s3
+#/data/predictions/*.csv
