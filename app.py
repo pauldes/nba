@@ -5,6 +5,8 @@ import streamlit as st
 import pandas
 import joblib
 import numpy
+import shap
+from matplotlib import pyplot
 
 from nba import br_extractor, preprocess, evaluate
 
@@ -71,7 +73,7 @@ def load_player_stats(day, month, season):
     folder = f"./data/current/{season}_{month}_{day}/"
     filename = "player_stats.csv"
     if filename not in os.listdir(folder):
-        stats.to_csv(folder + filename) 
+        stats.to_csv(folder + filename)
     return stats
 
 @st.cache
@@ -84,7 +86,7 @@ def load_team_stats(day, month, season):
     folder = f"./data/current/{season}_{month}_{day}/"
     filename = "team_stats.csv"
     if filename not in os.listdir(folder):
-        stats.to_csv(folder + filename) 
+        stats.to_csv(folder + filename)
     return stats
 
 @st.cache
@@ -96,7 +98,7 @@ def consolidate_stats(team_stats, player_stats, day, month, season):
     folder = f"./data/current/{season}_{month}_{day}/"
     filename = "consolidated_stats.csv"
     if filename not in os.listdir(folder):
-        stats.to_csv(folder + filename) 
+        stats.to_csv(folder + filename)
     return stats
 
 def load_2020_preds():
@@ -129,12 +131,12 @@ def save_predictions(series, day, month, year, filter_above=0.01):
     folder = "./data/predictions/"
     series = series[series>filter_above]
     if filename not in os.listdir(folder):
-        series.to_csv(folder + filename, header=False) 
+        series.to_csv(folder + filename, header=False)
 
 def predict(data, model):
-    # TODO get automatically from training step.. or keep all 
+    # TODO get automatically from training step.. or keep all
     cat = ['POS', 'CONF']
-    # TODO get automatically from training step.. or keep all 
+    # TODO get automatically from training step.. or keep all
     num = ['2P%', '2PA_per_36min', '3P%', '3PAR_advanced', '3P_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FGA_per_game', 'FG_per_36min', 'FT%', 'FTA_per_100poss', 'FTR_advanced', 'G', 'MP', 'OBPM_advanced', 'ORB_per_36min', 'ORTG_per_100poss', 'PF_per_100poss', 'PF_per_game', 'STL_per_36min', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB%_advanced', 'TS%_advanced', 'USG%_advanced', 'WS/48_advanced', 'WS_advanced', 'W', 'W/L%', 'GB', 'PL', 'PA/G', 'CONF_RANK']
     min_max_scaling = False
     data_processed_features_only, _ = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
@@ -151,7 +153,40 @@ def predict(data, model):
        'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
     X = data_processed_features_only[features]
     preds = model.predict(X)
-    return preds
+    return preds, X
+
+@st.cache
+def explain(model, data):
+    #explainer = shap.KernelExplainer(svm.predict_proba, X_train, link="logit")
+    #explainer = shap.Explainer(model)
+    # algorithm : “auto”, “permutation”, “partition”, “tree”, “kernel”, “sampling”, “linear”, “deep”, or “gradient”
+    # Calculate Shap values
+    X100 = shap.utils.sample(data, 50) # use more than 50 ?
+    explainer = shap.Explainer(model.predict, X100, algorithm='auto')
+    shap_values = explainer(data)
+    return shap_values
+
+# Sidebar
+#st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
+st.sidebar.text(f"Season : {year-1}-{year}")
+st.sidebar.markdown(f'''
+🏀 **Predicting the NBA Most Valuable Player using machine learning.**
+''')
+navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
+st.sidebar.markdown(f'''
+**How does it work ?**
+
+A statistical regression model is fitted on historical data (player and team stats, and MVP voting results).
+It is then used to predict this season MVP based on current data.
+The model predicts the *award share* (the number of points a player received for MVP award over the total points of all first-place votes).
+This share can then be converted to a chance/probability using various methods (see *Predictions parameters*).
+''')
+st.sidebar.markdown(f'''
+*Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
+''')
+
+#st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
+st.title(f'🏀 Predicting the NBA MVP')
 
 # Init page
 create_data_folder(day, month, year)
@@ -167,33 +202,12 @@ model = load_model()
 dataset = clean_data(current_consolidated_raw)
 # Predict
 initial_columns = list(dataset.columns)
-predictions = predict(dataset, model)
+predictions, model_input = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
+top_3_index = dataset.index[:3]
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
-
-# Sidebar
-#st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-st.sidebar.text(f"Season : {year-1}-{year}")
-st.sidebar.markdown(f'''
-🏀 **Predicting the NBA Most Valuable Player using machine learning.**
-''')
-navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
-st.sidebar.markdown(f'''
-**How does it work ?**
-
-A statistical regression model is fitted on historical data (player and team stats, and MVP voting results). 
-It is then used to predict this season MVP based on current data.
-The model predicts the *award share* (the number of points a player received for MVP award over the total points of all first-place votes). 
-This share can then be converted to a chance/probability using various methods (see *Predictions parameters*).
-''')
-st.sidebar.markdown(f'''
-*Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
-''')
-
-#st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-st.title(f'🏀 Predicting the NBA MVP')
 
 if navigation_page == PAGE_PREDICTIONS:
 
@@ -213,7 +227,7 @@ if navigation_page == PAGE_PREDICTIONS:
     dataset["MVP rank"] = dataset["PRED_RANK"]
     show_columns = ["MVP probability", "MVP rank"] + initial_columns[:]
     dataset = dataset[show_columns]
-    
+
 
     top_3 = dataset["MVP probability"][:3].to_dict()
     emojis = ["🥇", "🥈", "🥉"]
@@ -221,8 +235,8 @@ if navigation_page == PAGE_PREDICTIONS:
     for n, player_name in enumerate(top_3):
         title_level = "###" + n*"#"
         col1.markdown(f'''
-        #### {emojis[n]} **{player_name}** 
-        
+        #### {emojis[n]} **{player_name}**
+
         *{top_3[player_name]} chance to win MVP*
         ''')
 
@@ -246,7 +260,27 @@ if navigation_page == PAGE_PREDICTIONS:
             "color": {"field": "player", "type": "nominal"}
         }
     }, width=0, height=0, use_container_width=True)
-    #vega_lite_chart
+
+    st.subheader(f"🆕 Prediction explanation")
+
+    shap_values = explain(model, model_input)
+    model_input["player"] = model_input.index
+    model_input = model_input.reset_index(drop=True)
+
+    for i, col in enumerate(st.beta_columns(3)):
+        col.text(str(top_3_index[i]))
+        player_index = model_input[model_input.player == top_3_index[i]]
+        player_index = int(player_index.index[0])
+        #shap.initjs()
+        fig, ax = pyplot.subplots()
+        shap.plots.waterfall(shap_values[player_index], max_display=14, show=True)
+        col.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0)
+    # It may be possible to use JS backend for streamlit instead of matplotlib, see :
+    # https://discuss.streamlit.io/t/display-shap-diagrams-with-streamlit/1029/9
+    #plt.clf()
+    #print(type(plot))
+    #st.write(plot)
+    #shap.force_plot(explainer.expected_value, shap_values[0], model_input)
 
 elif navigation_page == PAGE_PERFORMANCE:
 
