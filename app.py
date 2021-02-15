@@ -156,7 +156,7 @@ def predict(data, model):
     return preds, X
 
 @st.cache
-def explain(data):
+def explain(data, day, month, season):
     model = load_model(day, month, season)
     #explainer = shap.KernelExplainer(svm.predict_proba, X_train, link="logit")
     #explainer = shap.Explainer(model)
@@ -264,7 +264,7 @@ if navigation_page == PAGE_PREDICTIONS:
 
     st.subheader(f"🆕 Prediction explanation")
 
-    shap_values = explain(model_input)
+    shap_values = explain(model_input, day, month, year)
     model_input["player"] = model_input.index
     model_input = model_input.reset_index(drop=True)
 
