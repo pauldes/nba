@@ -260,7 +260,7 @@ if navigation_page == PAGE_PREDICTIONS:
             "y": {"field": "prediction", "type": "quantitative"},
             "color": {"field": "player", "type": "nominal"}
         }
-    }, width=0, height=0, use_container_width=True)
+    }, width=0, height=300, use_container_width=True)
 
     st.subheader(f"🆕 Prediction explanation")
 
