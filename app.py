@@ -277,7 +277,7 @@ if navigation_page == PAGE_PREDICTIONS:
     fig, ax = pyplot.subplots()
     shap.plots.waterfall(shap_values[player_index], max_display=10, show=True)
     #shap.plots.force(0.01, shap_values=shap_values[player_index], show=True, figsize=(20,3))
-    #pyplot.title(selected_player)
+    pyplot.title(f"Impact of features on share prediction for {selected_player}")
     #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
     col_left.pyplot(fig, width=None, height=None)
 
