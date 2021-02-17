@@ -206,7 +206,7 @@ initial_columns = list(dataset.columns)
 predictions, model_input = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
-top_3_index = dataset.index[:3]
+players_list = dataset.index.to_list()
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
 
@@ -268,14 +268,19 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input["player"] = model_input.index
     model_input = model_input.reset_index(drop=True)
 
-    for i, col in enumerate(st.beta_columns(3)):
-        col.text(str(top_3_index[i]))
-        player_index = model_input[model_input.player == top_3_index[i]]
-        player_index = int(player_index.index[0])
-        #shap.initjs()
-        fig, ax = pyplot.subplots()
-        shap.plots.waterfall(shap_values[player_index], max_display=14, show=True)
-        col.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0)
+    col_left, col_right = st.beta_columns([3, 1])
+
+    selected_player = col_right.radio("Choose a player", players_list[:10])
+    player_index = model_input[model_input.player == selected_player]
+    player_index = int(player_index.index[0])
+    #shap.initjs()
+    fig, ax = pyplot.subplots()
+    shap.plots.waterfall(shap_values[player_index], max_display=10, show=True)
+    #shap.plots.force(0.01, shap_values=shap_values[player_index], show=True, figsize=(20,3))
+    #pyplot.title(selected_player)
+    #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
+    col_left.pyplot(fig, width=None, height=None)
+
     # It may be possible to use JS backend for streamlit instead of matplotlib, see :
     # https://discuss.streamlit.io/t/display-shap-diagrams-with-streamlit/1029/9
     #plt.clf()
