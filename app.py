@@ -187,10 +187,9 @@ st.sidebar.markdown(f'''
 ''')
 
 #st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-st.text(f"Season : {year-1}-{year}")
 st.title(f'🏀 Predicting the MVP')
 st.markdown(f'''
-*Predicting the NBA Most Valuable Player using machine learning.*
+*Predicting the NBA Most Valuable Player for season {year-1}-{year} using machine learning.*
 ''')
 
 # Init page
