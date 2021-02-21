@@ -170,9 +170,9 @@ def explain(data):
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.sidebar.text(f"Season : {year-1}-{year}")
-st.sidebar.markdown(f'''
-🏀 **Predicting the NBA Most Valuable Player using machine learning.**
-''')
+#st.sidebar.markdown(f'''
+#🏀 **Predicting the NBA Most Valuable Player using machine learning.**
+#''')
 navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
 st.sidebar.markdown(f'''
 **How does it work ?**
@@ -188,6 +188,9 @@ st.sidebar.markdown(f'''
 
 #st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.title(f'🏀 Predicting the NBA MVP')
+st.markdown(f'''
+*Predicting the NBA Most Valuable Player using machine learning.*
+''')
 
 # Init page
 create_data_folder(day, month, year)
