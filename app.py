@@ -23,7 +23,7 @@ day = datetime.datetime.now().day
 
 # Page properties
 #st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
-st.set_page_config(page_title="Predicting the NBA MVP", page_icon = ":basketball:", layout = 'centered', initial_sidebar_state = 'auto')
+st.set_page_config(page_title="Predicting the MVP", page_icon = ":basketball:", layout = 'centered', initial_sidebar_state = 'auto')
 
 # Functions
 #@st.cache
