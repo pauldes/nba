@@ -267,14 +267,16 @@ if navigation_page == PAGE_PREDICTIONS:
 
     st.subheader(f"🆕 Prediction explanation")
 
-    shap_values = explain(model_input)
-    model_input["player"] = model_input.index
-    model_input = model_input.reset_index(drop=True)
+    #TODO : use model_input_top10 (faster) or keep model_input (slower)
+    model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
+    shap_values = explain(model_input_top10)
+    model_input_top10["player"] = model_input_top10.index
+    model_input_top10 = model_input_top10.reset_index(drop=True)
 
     col_left, col_right = st.beta_columns([3, 1])
 
     selected_player = col_right.radio("Choose a player", players_list[:10])
-    player_index = model_input[model_input.player == selected_player]
+    player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     #shap.initjs()
     fig, ax = pyplot.subplots()
