@@ -137,19 +137,25 @@ def predict(data, model):
     # TODO get automatically from training step.. or keep all
     cat = ['POS', 'CONF']
     # TODO get automatically from training step.. or keep all
-    num = ['2P%', '2PA_per_36min', '3P%', '3PAR_advanced', '3P_per_game', 'AGE', 'AST%_advanced', 'BLK_per_36min', 'DBPM_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'FG%', 'FGA_per_game', 'FG_per_36min', 'FT%', 'FTA_per_100poss', 'FTR_advanced', 'G', 'MP', 'OBPM_advanced', 'ORB_per_36min', 'ORTG_per_100poss', 'PF_per_100poss', 'PF_per_game', 'STL_per_36min', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB%_advanced', 'TS%_advanced', 'USG%_advanced', 'WS/48_advanced', 'WS_advanced', 'W', 'W/L%', 'GB', 'PL', 'PA/G', 'CONF_RANK']
+    num = ['2P%', '2PA_per_36min', '2PA_per_game', '2P_per_36min', '3P%', '3PAR_advanced', '3P_per_36min', '3P_per_game', 'AGE', 'AST%_advanced', 'AST_per_game', 'BLK%_advanced', 'BLK_per_36min', 'BLK_per_game', 'BPM_advanced', 'DBPM_advanced', 'DRB%_advanced', 'DRB_per_game', 'DRTG_per_100poss', 'DWS_advanced', 'EFG%_per_game', 'FG%', 'FGA_per_100poss', 'FGA_per_36min', 'FGA_per_game', 'FG_per_100poss', 'FG_per_36min', 'FG_per_game', 'FT%', 'FTA_per_100poss', 'FTA_per_game', 'FTR_advanced', 'FT_per_36min', 'FT_per_game', 'G', 'MP', 'OBPM_advanced', 'ORB_per_36min', 'ORB_per_game', 'ORTG_per_100poss', 'OWS_advanced', 'PER_advanced', 'PF_per_100poss', 'PF_per_36min', 'PF_per_game', 'PTS_per_100poss', 'PTS_per_36min', 'PTS_per_game', 'STL_per_36min', 'STL_per_game', 'TOV%_advanced', 'TOV_per_36min', 'TOV_per_game', 'TRB%_advanced', 'TRB_per_game', 'TS%_advanced', 'USG%_advanced', 'VORP_advanced', 'WS/48_advanced', 'WS_advanced', 'W', 'L', 'W/L%', 'GB', 'PW', 'PL', 'PS/G', 'PA/G', 'CONF_RANK']
     min_max_scaling = False
     data_processed_features_only, _ = preprocess.scale_per_value_of(data, cat, num, data["SEASON"], min_max_scaler=min_max_scaling)
     # TODO get automatically from training step
-    features =  ['W', 'STL_per_36min', 'DRB_per_game', 'PL', 'TS%_advanced',
-       'TOV%_advanced', 'FG%', 'FT%', 'GB', 'PF_per_100poss', '2P%', 'PA/G',
-       '2PA_per_36min', '3P%', 'FG_per_36min', 'ORB_per_36min',
-       'TRB%_advanced', 'TOV_per_game', 'OBPM_advanced', 'CONF_RANK', 'G',
-       '3PAR_advanced', 'FTA_per_100poss', 'FGA_per_game', 'TOV_per_36min',
-       'MP', 'AST%_advanced', 'AGE', 'PF_per_game', 'USG%_advanced',
-       'DWS_advanced', 'ORTG_per_100poss', 'DBPM_advanced', 'WS/48_advanced',
-       'FTR_advanced', 'DRTG_per_100poss', '3P_per_game', 'BLK_per_36min',
-       'WS_advanced', 'W/L%', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG',
+    features =  ['OBPM_advanced', 'DRB_per_game', 'FG_per_100poss', 'FGA_per_game',
+       'TOV_per_game', 'FG%', 'PF_per_36min', 'PS/G', 'FGA_per_100poss',
+       'DBPM_advanced', 'STL_per_36min', 'PF_per_100poss', 'PL',
+       '2PA_per_36min', 'PTS_per_100poss', 'OWS_advanced', '2PA_per_game',
+       'BLK_per_game', 'CONF_RANK', 'TOV%_advanced', 'FTA_per_game',
+       'TRB%_advanced', 'W/L%', 'WS_advanced', 'DRTG_per_100poss',
+       'STL_per_game', 'EFG%_per_game', 'TOV_per_36min', 'PF_per_game',
+       'VORP_advanced', 'FT_per_36min', 'PER_advanced', 'USG%_advanced',
+       'DRB%_advanced', 'AST_per_game', 'W', 'FTA_per_100poss', 'FG_per_36min',
+       'DWS_advanced', 'TS%_advanced', 'FG_per_game', 'L', 'WS/48_advanced',
+       'BLK_per_36min', 'G', 'ORB_per_game', 'ORB_per_36min', 'PW', 'GB',
+       '3PAR_advanced', 'BLK%_advanced', 'ORTG_per_100poss', 'PTS_per_36min',
+       'FT%', 'FT_per_game', '2P_per_36min', 'FGA_per_36min', 'TRB_per_game',
+       '2P%', 'FTR_advanced', 'PTS_per_game', 'BPM_advanced', 'MP',
+       'AST%_advanced', 'POS_C', 'POS_PF', 'POS_PG', 'POS_SF', 'POS_SG',
        'CONF_EASTERN_CONF', 'CONF_WESTERN_CONF']
     X = data_processed_features_only[features]
     preds = model.predict(X)
