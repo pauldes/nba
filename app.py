@@ -173,6 +173,30 @@ def explain(population, sample_to_explain):
     shap_values = explainer(sample_to_explain)
     return shap_values
 
+"""
+def predict_old():
+     folders = [x[0] for x in os.walk("./data/current/")]
+     for folder in folders:
+        try:
+            date = folder[-10:]
+            year = int(date[:4])
+            month = int(date[5:7])
+            day = int(date[8:])
+            current_consolidated_raw = pandas.read_csv(folder + "/consolidated_stats.csv", index_col=0)
+            model = load_model()
+            dataset = clean_data(current_consolidated_raw)
+            predictions, model_input = predict(dataset, model)
+            dataset.loc[:, "PRED"] = predictions
+            dataset = dataset.sort_values(by="PRED", ascending=False)
+            dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
+            save_predictions(dataset["PRED"], day, month, year)
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            print(f"Could not compute predictions for {date} : {e}")
+predict_old()
+"""
+
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 #st.sidebar.text(f"Season : {year-1}-{year}")
