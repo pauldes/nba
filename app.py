@@ -184,7 +184,7 @@ def predict_old():
             current_consolidated_raw = pandas.read_csv(folder + "/consolidated_stats.csv", index_col=0)
             model = load_model()
             dataset = clean_data(current_consolidated_raw)
-            predictions, model_input = predict(dataset, model)
+            predictions, _ = predict(dataset, model)
             dataset.loc[:, "PRED"] = predictions
             dataset = dataset.sort_values(by="PRED", ascending=False)
             dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
