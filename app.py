@@ -173,7 +173,6 @@ def explain(population, sample_to_explain):
     shap_values = explainer(sample_to_explain)
     return shap_values
 
-"""
 def predict_old():
      folders = [x[0] for x in os.walk("./data/current/")]
      for folder in folders:
@@ -194,8 +193,9 @@ def predict_old():
             pass
         except Exception as e:
             print(f"Could not compute predictions for {date} : {e}")
-predict_old()
-"""
+
+#predict_old()
+
 
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
