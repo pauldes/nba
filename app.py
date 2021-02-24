@@ -162,15 +162,15 @@ def predict(data, model):
     return preds, X
 
 @st.cache
-def explain(data):
+def explain(population, sample_to_explain):
     model = load_model()
     #explainer = shap.KernelExplainer(svm.predict_proba, X_train, link="logit")
     #explainer = shap.Explainer(model)
     # algorithm : “auto”, “permutation”, “partition”, “tree”, “kernel”, “sampling”, “linear”, “deep”, or “gradient”
     # Calculate Shap values
-    X100 = shap.utils.sample(data, 50) # use more than 50 ?
+    X100 = shap.utils.sample(population, 50) # use more than 50 ?
     explainer = shap.Explainer(model.predict, X100, algorithm='auto')
-    shap_values = explainer(data)
+    shap_values = explainer(sample_to_explain)
     return shap_values
 
 # Sidebar
