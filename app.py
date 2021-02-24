@@ -168,8 +168,8 @@ def explain(population, sample_to_explain):
     #explainer = shap.Explainer(model)
     # algorithm : “auto”, “permutation”, “partition”, “tree”, “kernel”, “sampling”, “linear”, “deep”, or “gradient”
     # Calculate Shap values
-    X100 = shap.utils.sample(population, 50) # use more than 50 ?
-    explainer = shap.Explainer(model.predict, X100, algorithm='auto')
+    #X100 = shap.utils.sample(population, 100) # use more than 50 ?
+    explainer = shap.Explainer(model.predict, population, algorithm='auto')
     shap_values = explainer(sample_to_explain)
     return shap_values
 
@@ -275,7 +275,7 @@ if navigation_page == PAGE_PREDICTIONS:
 
     #TODO : use model_input_top10 (faster) or keep model_input (slower)
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
-    shap_values = explain(model_input_top10)
+    shap_values = explain(model_input, model_input_top10)
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
