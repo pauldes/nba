@@ -49,7 +49,7 @@ def scale_per_value_of(data, selected_cat_features, selected_num_features, scale
         raise NotImplementedError("Need at least 1 numerical feature")
     X_num = standardize(data[selected_num_features], fit_on=None, fit_per_values_of=scale_per_value_of, min_max_scaler=min_max_scaler)
     if selected_cat_features is not None and len(selected_cat_features)>0:
-        X_cat = pandas.get_dummies(data[selected_cat_features])
+        X_cat = pandas.get_dummies(data[selected_cat_features]) #, drop_first=True)
         X_processed = pandas.concat([X_num, X_cat], axis=1)
         X_raw = data[selected_num_features + selected_cat_features]
     else:
