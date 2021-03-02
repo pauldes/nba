@@ -196,7 +196,6 @@ def predict_old():
 
 #predict_old()
 
-
 # Sidebar
 #st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 #st.sidebar.text(f"Season : {year-1}-{year}")
@@ -285,6 +284,7 @@ if navigation_page == PAGE_PREDICTIONS:
     st.vega_lite_chart(prepared_history, {
         "mark": {
             "type": "line",
+            "interpolate": "monotone",
             "point": True,
             "tooltip": True
         },
@@ -295,7 +295,7 @@ if navigation_page == PAGE_PREDICTIONS:
         }
     }, width=0, height=300, use_container_width=True)
 
-    st.subheader(f"🆕 Prediction explanation")
+    st.subheader(f"Predictions explanation")
 
     #TODO : use model_input_top10 (faster) or keep model_input (slower)
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
@@ -303,9 +303,10 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
-    col_left, col_right = st.beta_columns([3, 1])
+    #col_left, col_right = st.beta_columns([3, 1])
 
-    selected_player = col_right.radio("Choose a player", players_list[:10])
+    #selected_player = col_right.radio("Choose a player", players_list[:10])
+    selected_player = st.selectbox("Choose a player", players_list[:10])
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     #shap.initjs()
@@ -314,7 +315,8 @@ if navigation_page == PAGE_PREDICTIONS:
     #shap.plots.force(0.01, shap_values=shap_values[player_index], show=True, figsize=(20,3))
     pyplot.title(f"Most impactful features on share prediction for {selected_player}")
     #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
-    col_left.pyplot(fig, width=None, height=None)
+    #col_left.pyplot(fig, width=None, height=None)
+    st.pyplot(fig, width=None, height=None)
 
     # It may be possible to use JS backend for streamlit instead of matplotlib, see :
     # https://discuss.streamlit.io/t/display-shap-diagrams-with-streamlit/1029/9
