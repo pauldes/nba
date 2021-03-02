@@ -173,6 +173,10 @@ def explain(population, sample_to_explain):
     shap_values = explainer(sample_to_explain)
     return shap_values
 
+def st_shap(plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+    st.components.v1.html(shap_html, height=height)
+
 def predict_old():
      folders = [x[0] for x in os.walk("./data/current/")]
      for folder in folders:
@@ -293,7 +297,7 @@ if navigation_page == PAGE_PREDICTIONS:
             "y": {"field": "prediction", "type": "quantitative"},
             "color": {"field": "player", "type": "nominal"}
         }
-    }, width=0, height=300, use_container_width=True)
+    }, height=400, use_container_width=True)
 
     st.subheader(f"Predictions explanation")
 
@@ -306,17 +310,18 @@ if navigation_page == PAGE_PREDICTIONS:
     #col_left, col_right = st.beta_columns([3, 1])
 
     #selected_player = col_right.radio("Choose a player", players_list[:10])
-    selected_player = st.selectbox("Choose a player", players_list[:10])
+    selected_player = st.selectbox("Choose a player to get explanations of his current MVP share prediction", players_list[:10])
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     #shap.initjs()
     fig, ax = pyplot.subplots()
-    shap.plots.waterfall(shap_values[player_index], max_display=10, show=True)
+    print(type(shap_values[player_index]))
+    shap.plots.waterfall(shap_values[player_index], max_display=10, show=False)
     #shap.plots.force(0.01, shap_values=shap_values[player_index], show=True, figsize=(20,3))
     pyplot.title(f"Most impactful features on share prediction for {selected_player}")
     #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
     #col_left.pyplot(fig, width=None, height=None)
-    st.pyplot(fig, width=None, height=None)
+    st.pyplot(fig)
 
     # It may be possible to use JS backend for streamlit instead of matplotlib, see :
     # https://discuss.streamlit.io/t/display-shap-diagrams-with-streamlit/1029/9
