@@ -280,7 +280,7 @@ if navigation_page == PAGE_PREDICTIONS:
     col1, col2 = st.beta_columns(2)
     keep_top_n = col2.slider('Number of players to show', min_value=3, max_value=compute_probs_based_on_top_n, value=5, step=1)
     variable_to_draw_dict = {"Predicted MVP share":"prediction", "MVP chance":"chance"}
-    variable_to_draw = col1.radio('Variable to draw', variable_to_draw_dict.keys())
+    variable_to_draw = col1.radio('Variable to draw', [var for var in variable_to_draw_dict.keys()])
     history = build_history(day, month, year).copy(deep=True)
     prepared_history = prepare_history(history, keep_top_n, confidence_mode, compute_probs_based_on_top_n)
     
