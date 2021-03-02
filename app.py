@@ -315,9 +315,10 @@ if navigation_page == PAGE_PREDICTIONS:
     player_index = int(player_index.index[0])
     #shap.initjs()
     fig, ax = pyplot.subplots()
-    shap.plots.waterfall(shap_values[player_index], max_display=10, show=False)
+    NUM_FEATURES_DISPLAYED = 20
+    shap.plots.waterfall(shap_values[player_index], max_display=NUM_FEATURES_DISPLAYED, show=False)
     #shap.plots.force(0.01, shap_values=shap_values[player_index], show=False)
-    pyplot.title(f"Most impactful features on share prediction for {selected_player}")
+    pyplot.title(f"{NUM_FEATURES_DISPLAYED} most impactful features on share prediction for {selected_player}")
     #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
     #col_left.pyplot(fig, width=None, height=None)
     st.pyplot(fig)
