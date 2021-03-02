@@ -30,7 +30,7 @@ st.set_page_config(page_title="Predicting the MVP", page_icon = ":basketball:", 
 def load_model():
     return joblib.load('static/model/model.joblib')
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def build_history(day, month, season):
     # TODO use a database or other persistent storage
     # For now files are deleted at each deploy
@@ -43,15 +43,6 @@ def build_history(day, month, season):
             #predictions["date"] = filename[:10]
             stats = stats.append(predictions, sort=False)
     return stats
-
-def prepare_history(stats, keep_top_n):
-    keep_players = stats.sort_values(by=["date", "prediction"], ascending=False)["player"].to_list()[:keep_top_n]
-    stats = stats[stats["player"].isin(keep_players)]
-    #stats = stats.pivot(index='date', columns='player', values='prediction')
-    stats = stats.fillna(0.0)
-    #stats.columns = [''+col for col in stats.columns.values]
-    return stats
-
 
 def create_data_folder(day, month, season):
     day = str(day).rjust(2, "0")
@@ -177,6 +168,20 @@ def st_shap(plot, height=None):
     shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
     st.components.v1.html(shap_html, height=height)
 
+def prepare_history(stats, keep_top_n, confidence_mode, compute_probs_based_on_top_n):
+    keep_players = stats.sort_values(by=["date", "prediction"], ascending=False)["player"].to_list()[:keep_top_n]
+    for date in stats.date.unique():
+        stats.loc[stats.date == date, "rank"] = stats.loc[stats.date == date, "prediction"].rank(ascending=False)
+        if confidence_mode == CONFIDENCE_MODE_SOFTMAX:
+            stats.loc[stats.date == date, 'chance'] = evaluate.softmax(stats[stats.date == date]["prediction"]) * 100
+            #stats.loc[dataset.rank <= compute_probs_based_on_top_n, "chance"] = evaluate.softmax(dataset[dataset.rank <= compute_probs_based_on_top_n]["prediction"]) * 100
+        else:
+            stats.loc[stats.date == date, 'chance'] = evaluate.share(stats[stats.date == date]["prediction"]) * 100
+            #stats.loc[dataset.rank <= compute_probs_based_on_top_n, "chance"] = evaluate.share(dataset[dataset.rank <= compute_probs_based_on_top_n]["prediction"]) * 100
+    stats = stats[stats["player"].isin(keep_players)]
+    stats = stats.fillna(0.0)
+    return stats
+
 def predict_old():
      folders = [x[0] for x in os.walk("./data/current/")]
      for folder in folders:
@@ -198,14 +203,6 @@ def predict_old():
         except Exception as e:
             print(f"Could not compute predictions for {date} : {e}")
 
-#predict_old()
-
-# Sidebar
-#st.sidebar.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
-#st.sidebar.text(f"Season : {year-1}-{year}")
-#st.sidebar.markdown(f'''
-#🏀 **Predicting the NBA Most Valuable Player using machine learning.**
-#''')
 navigation_page = st.sidebar.radio('Navigate to', [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
 st.sidebar.markdown(f'''
 **How does it work ?**
@@ -250,11 +247,10 @@ if navigation_page == PAGE_PREDICTIONS:
 
     st.header("Current year predictions")
     col1, col2 = st.beta_columns(2)
-    #col2.markdown("Prediction parameters")
     col1.subheader("Predicted top 3")
     col2.subheader("Prediction parameters")
     confidence_mode = col2.radio('MVP probability estimation method', [CONFIDENCE_MODE_SHARE, CONFIDENCE_MODE_SOFTMAX])
-    compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=100, value=10, step=5)
+    compute_probs_based_on_top_n = col2.slider('Number of players used to estimate probability', min_value=5, max_value=50, value=10, step=5)
     if confidence_mode == CONFIDENCE_MODE_SOFTMAX:
         dataset.loc[dataset.PRED_RANK <= compute_probs_based_on_top_n, "MVP probability"] = evaluate.softmax(dataset[dataset.PRED_RANK <= compute_probs_based_on_top_n]["PRED"]) * 100
     else:
@@ -281,10 +277,13 @@ if navigation_page == PAGE_PREDICTIONS:
     st.dataframe(data=dataset.head(compute_probs_based_on_top_n), width=None, height=None)
 
     st.subheader(f"Share predictions history")
-    keep_top_n = st.slider('Number of players to show', min_value=5, max_value=15, value=5, step=1)
-    history = build_history(day, month, year)
-    prepared_history = prepare_history(history, keep_top_n)
-    #st.area_chart(prepared_history)
+    col1, col2 = st.beta_columns(2)
+    keep_top_n = col2.slider('Number of players to show', min_value=3, max_value=compute_probs_based_on_top_n, value=5, step=1)
+    variable_to_draw = col1.radio('Variable to draw', ["Predicted MVP share", "MVP chance (%)"])
+    variable_to_draw_dict = {"Predicted MVP share":"prediction", "MVP chance":"chance"}
+    history = build_history(day, month, year).copy(deep=True)
+    prepared_history = prepare_history(history, keep_top_n, confidence_mode, compute_probs_based_on_top_n)
+    
     st.vega_lite_chart(prepared_history, {
         "mark": {
             "type": "line",
@@ -294,7 +293,7 @@ if navigation_page == PAGE_PREDICTIONS:
         },
         "encoding": {
             "x": {"timeUnit": "yearmonthdate", "field": "date"},
-            "y": {"field": "prediction", "type": "quantitative"},
+            "y": {"field": variable_to_draw_dict[variable_to_draw], "type": "quantitative", "title": variable_to_draw},
             "color": {"field": "player", "type": "nominal"}
         }
     }, height=400, use_container_width=True)
