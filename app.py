@@ -309,15 +309,17 @@ if navigation_page == PAGE_PREDICTIONS:
     #col_left, col_right = st.beta_columns([3, 1])
 
     #selected_player = col_right.radio("Choose a player", players_list[:10])
-    selected_player = st.selectbox("Choose a player to get explanations of his current MVP share prediction", players_list[:10])
+    col1, col2 = st.beta_columns(2)
+    selected_player = col1.selectbox("Player", players_list[:10])
+    num_features_displayed = col2.slider('Number of features to show', min_value=5, max_value=50, value=10, step=5)
+    
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     #shap.initjs()
     fig, ax = pyplot.subplots()
-    NUM_FEATURES_DISPLAYED = 20
-    shap.plots.waterfall(shap_values[player_index], max_display=NUM_FEATURES_DISPLAYED, show=False)
+    shap.plots.waterfall(shap_values[player_index], max_display=num_features_displayed, show=False)
     #shap.plots.force(0.01, shap_values=shap_values[player_index], show=False)
-    pyplot.title(f"{NUM_FEATURES_DISPLAYED} most impactful features on share prediction for {selected_player}")
+    pyplot.title(f"{num_features_displayed} most impactful features on share prediction for {selected_player}")
     #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
     #col_left.pyplot(fig, width=None, height=None)
     st.pyplot(fig)
