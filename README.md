@@ -2,7 +2,7 @@
 
 Look for the result at [nbamvp.herokuapp.com](https://nbamvp.herokuapp.com)
 
-![](static/img/screenshot.JPG)
+![](static/img/animated_screenshot_lowres.GIF)
 
 ## Development
 
