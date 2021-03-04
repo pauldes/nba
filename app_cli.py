@@ -61,8 +61,8 @@ def consolidate():
     all_data.to_csv(path)
 
 def train():
-    # clean_data
-    # pipe
+    # clean_data.ipynb
+    # training_model.ipynb
     pass
 
 def expose():

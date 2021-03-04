@@ -8,9 +8,9 @@ Look for the result at [nbamvp.herokuapp.com](https://nbamvp.herokuapp.com)
 
 ```pipenv run mlflow ui```
 
-```pipenv run streamlit run app.py```
+```pipenv run streamlit run app_web.py```
 
-```pipenv run python main.py --help```
+```pipenv run python app_cli.py --help```
 
 ## Pain points and future work
 
