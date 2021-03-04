@@ -18,8 +18,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
       - name: Score nba module with pylint
-        run: pylint ./nba/ --disable missing-module-docstring
+        run: pylint ./nba/ --disable missing-module-docstring import-error
       - name: Score CLI app with pylint
-        run: pylint ./nba/app_cli.py --disable missing-module-docstring
+        run: pylint ./nba/app_cli.py --disable missing-module-docstring import-error
       - name: Score webapp with pylint
-        run: pylint ./nba/app_cli.py --disable missing-module-docstring
+        run: pylint ./nba/app_cli.py --disable missing-module-docstring import-error
