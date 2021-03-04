@@ -20,6 +20,6 @@ jobs:
       - name: Score nba module with pylint
         run: pylint ./nba/ --disable missing-module-docstring import-error --fail-under=4.0
       - name: Score CLI app with pylint
-        run: pylint ./nba/app_cli.py --disable missing-module-docstring import-error --fail-under=4.0
+        run: pylint ./app_cli.py --disable missing-module-docstring import-error --fail-under=4.0
       - name: Score webapp with pylint
-        run: pylint ./nba/app_cli.py --disable missing-module-docstring import-error --fail-under=4.0
+        run: pylint ./app_cli.py --disable missing-module-docstring import-error --fail-under=4.0
