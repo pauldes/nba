@@ -42,3 +42,4 @@ Solutions :
 - Rank stats (another solution for label consistency issue)
 - Use previous years voting results (to model voters lassitude phenomena)
 - Limit the players pool in each team to 2 or 3 players based on a treshold to define (or on another model)
+- Addd top performances or statement games as a feature
