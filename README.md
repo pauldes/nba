@@ -26,7 +26,10 @@ There is only 1 MVP per year, among hundreds of players.
 
 Solutions :
 - use MVP share instead of MVP award
-- use generally accepted tresholds to filter non-MVP players : more than 40% of games played
+- use generally accepted tresholds to filter non-MVP players : 
+  - more than 40% of the season games played
+  - more than 20 minutes played per game
+  - team conference rank above 9 (playoff qualifier)
 
 #### Label consistency
 
