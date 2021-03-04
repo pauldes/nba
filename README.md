@@ -18,13 +18,16 @@ Track models performance :
 ## Main challenges
 
 
-- Imbalanced data : there is only 1 MVP per year, among hundreds of players.
+**Imbalanced data** : there is only 1 MVP per year, among hundreds of players.
 Solutions :
--   use MVP share instead of MVP award
--   use generally accepted tresholds to filter non-MVP players : more than 40% of games played
-- Label consistency : a player winning MVP one year may not have won MVP the year before, event with the same stats. It all depends on the concurrency.
+- use MVP share instead of MVP award
+- use generally accepted tresholds to filter non-MVP players : more than 40% of games played
+
+**Label consistency** : a player winning MVP one year may not have won MVP the year before, event with the same stats. It all depends on the concurrency.
 Solutions :
--   normalize stats (min-max or standardization) per season
+- normalize stats per season
+  - min-max scaling
+  - standardization
 
 ## Future work
 
