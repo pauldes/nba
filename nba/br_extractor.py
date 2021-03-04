@@ -1,12 +1,9 @@
-import os
 import datetime
-import pandas
 import yaml
-import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
-from basketball_reference_scraper.teams import get_roster, get_team_stats
+import pandas
+from bs4 import BeautifulSoup
 from basketball_reference_scraper.seasons import get_standings
 
 """ 
@@ -50,21 +47,21 @@ class BRExtractor():
                 table = table_nba_mvp
             else:
                 raise Exception("No table found for MVP data for season", season)
-            df = pd.read_html(str(table), header=1)[0]
-            df.columns = [str(col).upper() for col in df.columns]
-            df.loc[:, 'SEASON'] = season
-            df = df.rename(columns={"SHARE":"MVP_VOTES_SHARE"})
-            df = df.rename(columns={"TM":"TEAM"})
-            df = df[["PLAYER", "TEAM", "SEASON", "MVP_VOTES_SHARE", "RANK"]]
-            df.loc[:, 'PLAYER'] = df["PLAYER"].str.replace('[^A-Za-z]', '')
-            df.loc[:, 'MVP_WINNER'] = False
-            df["RANK"] = df["RANK"].astype(str).str.replace('[^0-9]', '').astype(int, errors='raise')
-            df.loc[df["RANK"]==1, 'MVP_WINNER'] = True
-            df.loc[:, 'MVP_PODIUM'] = False
-            df.loc[df["RANK"].isin([1,2,3]), 'MVP_PODIUM'] = True
-            df.loc[:, 'MVP_CANDIDATE'] = True
-            df = df.drop("RANK", axis='columns')
-            return df
+            data = pandas.read_html(str(table), header=1)[0]
+            data.columns = [str(col).upper() for col in data.columns]
+            data.loc[:, 'SEASON'] = season
+            data = data.rename(columns={"SHARE":"MVP_VOTES_SHARE"})
+            data = data.rename(columns={"TM":"TEAM"})
+            data = data[["PLAYER", "TEAM", "SEASON", "MVP_VOTES_SHARE", "RANK"]]
+            data.loc[:, 'PLAYER'] = data["PLAYER"].str.replace('[^A-Za-z]', '')
+            data.loc[:, 'MVP_WINNER'] = False
+            data["RANK"] = data["RANK"].astype(str).str.replace('[^0-9]', '').astype(int, errors='raise')
+            data.loc[data["RANK"]==1, 'MVP_WINNER'] = True
+            data.loc[:, 'MVP_PODIUM'] = False
+            data.loc[data["RANK"].isin([1,2,3]), 'MVP_PODIUM'] = True
+            data.loc[:, 'MVP_CANDIDATE'] = True
+            data = data.drop("RANK", axis='columns')
+            return data
         else:
             raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)
 
@@ -103,17 +100,17 @@ class BRExtractor():
         if r.status_code==200:
                 soup = BeautifulSoup(r.content, 'html.parser')
                 table = soup.find('table')
-                df = pd.read_html(str(table))[0]
-                df = df.loc[df.Player!="Player",:]
-                df.columns = [str(col).upper() for col in df.columns]
-                df.loc[:, 'SEASON'] = season
-                df.loc[:, 'PLAYER'] = df["PLAYER"].str.replace('[^A-Za-z]', '')
-                df = df.rename(columns={"TM":"TEAM"})
-                df = df.drop("RK", axis='columns')
-                for col in df.columns:
+                data = pandas.read_html(str(table))[0]
+                data = data.loc[data.Player!="Player",:]
+                data.columns = [str(col).upper() for col in data.columns]
+                data.loc[:, 'SEASON'] = season
+                data.loc[:, 'PLAYER'] = data["PLAYER"].str.replace('[^A-Za-z]', '')
+                data = data.rename(columns={"TM":"TEAM"})
+                data = data.drop("RK", axis='columns')
+                for col in data.columns:
                     if col.startswith("3P"):
-                        df[col] = df[col].fillna(0.0)
-                return df
+                        data[col] = data[col].fillna(0.0)
+                return data
         else:
             raise ConnectionError("Could not connect to BR and get data, status code : %s", r.status_code)
 
@@ -133,28 +130,28 @@ class BRExtractor():
             date = "06-01-" + str(season)
             dfs = []
             results = get_standings(date=date)
-            for conference, df in results.items():
-                df = df.dropna(axis='index', how='any')
-                df = df.sort_values(by="W/L%", ascending=False)
-                df = df.reset_index(drop=True)
-                df.loc[:, "CONF"] = conference
-                df.loc[:, "CONF_RANK"] = df.index + 1
-                df.loc[:, "TEAM"] = df["TEAM"].str.upper().str.replace('[^A-Z]', '')
+            for conference, data in results.items():
+                data = data.dropna(axis='index', how='any')
+                data = data.sort_values(by="W/L%", ascending=False)
+                data = data.reset_index(drop=True)
+                data.loc[:, "CONF"] = conference
+                data.loc[:, "CONF_RANK"] = data.index + 1
+                data.loc[:, "TEAM"] = data["TEAM"].str.upper().str.replace('[^A-Z]', '')
                 team_names = {}
                 for raw, short in self.team_names.items():
                     raw = ''.join(filter(str.isalpha, raw)).upper()
                     team_names[raw] = short
-                df = df[~df["TEAM"].str.contains("DIVISION")]
-                unmapped_teams = [team for team in df["TEAM"].unique() if team not in team_names.keys()]
-                mapped_teams = [team for team in df["TEAM"].unique() if team in team_names.keys()]
-                df.loc[:, "TEAM"] = df["TEAM"].map(team_names)
-                if df["TEAM"].isna().sum() > 0:
+                data = data[~data["TEAM"].str.contains("DIVISION")]
+                unmapped_teams = [team for team in data["TEAM"].unique() if team not in team_names.keys()]
+                mapped_teams = [team for team in data["TEAM"].unique() if team in team_names.keys()]
+                data.loc[:, "TEAM"] = data["TEAM"].map(team_names)
+                if data["TEAM"].isna().sum() > 0:
                     raise ValueError("Unknown/unmapped teams : %s", unmapped_teams)
-                df.loc[:, "GB"] = df["GB"].str.replace("—", "0.0").astype(float, errors="raise")
-                df.loc[:, "TEAM_SEASON"] = df["TEAM"] + "_" + str(season)
-                df.loc[:, "SEASON"] = season
-                df = df.set_index("TEAM_SEASON", drop=True)
-                dfs.append(df)
+                data.loc[:, "GB"] = data["GB"].str.replace("—", "0.0").astype(float, errors="raise")
+                data.loc[:, "TEAM_SEASON"] = data["TEAM"] + "_" + str(season)
+                data.loc[:, "SEASON"] = season
+                data = data.set_index("TEAM_SEASON", drop=True)
+                dfs.append(data)
             all_conf_df = pandas.concat(dfs, join='outer', axis="index", ignore_index=False)
             total_dfs.append(all_conf_df)
         all_conf_df = pandas.concat(total_dfs, join='outer', axis="index", ignore_index=False)
@@ -210,3 +207,4 @@ class BRExtractor():
             full_df = full_df[full_df.TEAM.isin(subset_by_teams)]
 
         return full_df
+        

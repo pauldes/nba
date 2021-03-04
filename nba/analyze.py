@@ -18,11 +18,11 @@ def get_columns_with_inter_correlations_under(dataframe, treshold):
     return res
 
 def get_column_pairs_correlation(dataframe):
-    corr = dataframe.corr().abs()
-    s = corr.unstack()
-    so = s.sort_values(ascending=False)
-    so = so[so<1.000]
-    return so
+    correlations = dataframe.corr().abs()
+    unstacked_correlations = correlations.unstack()
+    unstacked_correlations = unstacked_correlations.sort_values(ascending=False)
+    unstacked_correlations = unstacked_correlations[unstacked_correlations<1.000]
+    return unstacked_correlations
 
 def get_columns_correlation_with_target(dataframe, target_column, method='pearson'):
     corr = dataframe.corr(method=method)
@@ -45,9 +45,8 @@ def plot_correlation_heatmap(dataframe, corner=True, method='pearson'):
     else:
         mask=None
     # Set up the matplotlib figure
-    #f, ax = pyplot.subplots(figsize=(11, 9))
-    # Generate a custom diverging colormap
     cmap = seaborn.diverging_palette(240, 10, as_cmap=True)
     # Draw the heatmap with the mask and correct aspect ratio
     seaborn.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True, fmt=".2f")
     pyplot.title(method)
+    
