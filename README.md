@@ -1,4 +1,4 @@
-# Predicting the KIA MVP
+# Predicting the NBA Most Valuable Player
 
 Look for the result at [nbamvp.herokuapp.com](https://nbamvp.herokuapp.com)
 
@@ -6,13 +6,26 @@ Look for the result at [nbamvp.herokuapp.com](https://nbamvp.herokuapp.com)
 
 ## Development
 
-```pipenv run mlflow ui```
-
+Run the webapp locally : 
 ```pipenv run streamlit run app.py```
 
+Load fresh data :
 ```pipenv run python main.py --help```
 
-## Pain points and future work
+Track models performance :
+```pipenv run mlflow ui```
 
-Probleme anticipé :
-- 1 vice MVP une année pourrait être MVP l'année d'avant. La concurrence est importante. C'est cela que vise à traiter la normalisation par saison. Ajouter un rank pour chaque stat pourrait aussi être pertinent.
+## Main challenges
+
+
+- Imbalanced data : there is only 1 MVP per year, among hundreds of players.
+Solutions :
+-   use MVP share instead of MVP award
+-   use generally accepted tresholds to filter non-MVP players : more than 40% of games played
+- Label consistency : a player winning MVP one year may not have won MVP the year before, event with the same stats. It all depends on the concurrency.
+Solutions :
+-   normalize stats (min-max or standardization) per season
+
+## Future work
+
+Rank stats
