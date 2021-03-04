@@ -40,5 +40,5 @@ Solutions :
 ## Future work and model improvement ideas
 
 - Rank stats (another solution for label consistency issue)
-- Use previous years result (to model voters lassitude phenomena)
+- Use previous years voting results (to model voters lassitude phenomena)
 - Limit the players pool in each team to 2 or 3 players based on a treshold to define (or on another model)
