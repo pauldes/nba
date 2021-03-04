@@ -37,7 +37,7 @@ Solutions :
   - min-max scaling
   - standardization
 
-## Future work
+## Future work and model improvement ideas
 
 - Rank stats (another solution for label consistency issue)
 - Use previous years result (to model voters lassitude phenomena)
