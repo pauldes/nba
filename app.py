@@ -11,7 +11,6 @@ from matplotlib import pyplot
 from nba import br_extractor, preprocess, evaluate
 
 # Constants
-LOGO_URL = "https://i.jebbit.com/images/k9VpjZfZ/business-images/41hdlnbMRJSZe152NgYk_KIA_PerfAwards_MVP.png"
 PAGE_PREDICTIONS = "Current year predictions"
 PAGE_PERFORMANCE = "Model performance analysis"
 CONFIDENCE_MODE_SOFTMAX = "Softmax-based"
@@ -22,7 +21,6 @@ month = datetime.datetime.now().month
 day = datetime.datetime.now().day
 
 # Page properties
-#st.set_page_config(page_title='NBA MVP Prediction', page_icon = LOGO_URL, layout = 'centered', initial_sidebar_state = 'auto')
 st.set_page_config(page_title="Predicting the MVP", page_icon = ":basketball:", layout = 'centered', initial_sidebar_state = 'auto')
 
 # Functions
@@ -106,7 +104,7 @@ def avg_real_mvp_rank(test_dataset_predictions):
     metrics = (test_dataset_predictions["REAL_RANK"]).mean()
     return "%.2f" % metrics
 def clean_data(data):
-    #TODO : reuse cleaning process
+    #TODO : automatically reuse cleaning process from training
     data = data.fillna(0.0)
     data["G"] = data["G"].astype(int)
     data = data[data["G"] >= int(0.4*data["G"].max())]
@@ -155,11 +153,6 @@ def predict(data, model):
 @st.cache
 def explain(population, sample_to_explain):
     model = load_model()
-    #explainer = shap.KernelExplainer(svm.predict_proba, X_train, link="logit")
-    #explainer = shap.Explainer(model)
-    # algorithm : “auto”, “permutation”, “partition”, “tree”, “kernel”, “sampling”, “linear”, “deep”, or “gradient”
-    # Calculate Shap values
-    #X100 = shap.utils.sample(population, 100) # use more than 50 ?
     explainer = shap.Explainer(model.predict, population, algorithm='auto')
     shap_values = explainer(sample_to_explain)
     return shap_values
@@ -216,7 +209,6 @@ st.sidebar.markdown(f'''
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 ''')
 
-#st.image(LOGO_URL, width=100, clamp=False, channels='RGB', output_format='auto')
 st.title(f'🏀 Predicting the MVP')
 st.markdown(f'''
 *Predicting the NBA Most Valuable Player for the {year-1}-{str(year)[-2:]} season using machine learning.*
@@ -300,36 +292,21 @@ if navigation_page == PAGE_PREDICTIONS:
 
     st.subheader(f"Predictions explanation")
 
-    #TODO : use model_input_top10 (faster) or keep model_input (slower)
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     shap_values = explain(model_input, model_input_top10)
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
-    #col_left, col_right = st.beta_columns([3, 1])
-
-    #selected_player = col_right.radio("Choose a player", players_list[:10])
     col1, col2 = st.beta_columns(2)
     selected_player = col1.selectbox("Player", players_list[:10])
     num_features_displayed = col2.slider('Number of features to show', min_value=5, max_value=50, value=10, step=5)
     
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
-    #shap.initjs()
     fig, ax = pyplot.subplots()
     shap.plots.waterfall(shap_values[player_index], max_display=num_features_displayed, show=False)
-    #shap.plots.force(0.01, shap_values=shap_values[player_index], show=False)
     pyplot.title(f"{num_features_displayed} most impactful features on share prediction for {selected_player}")
-    #st.pyplot(fig, bbox_inches='tight', dpi=300, pad_inches=0, , width=None, height=None)
-    #col_left.pyplot(fig, width=None, height=None)
     st.pyplot(fig)
-
-    # It may be possible to use JS backend for streamlit instead of matplotlib, see :
-    # https://discuss.streamlit.io/t/display-shap-diagrams-with-streamlit/1029/9
-    #plt.clf()
-    #print(type(plot))
-    #st.write(plot)
-    #shap.force_plot(explainer.expected_value, shap_values[0], model_input)
 
 elif navigation_page == PAGE_PERFORMANCE:
 
