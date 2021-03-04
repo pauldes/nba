@@ -1,6 +1,6 @@
 # Predicting the NBA Most Valuable Player
 
-This project aims at predicting the player who will win the NBA MVP award, by modelling the voting panel. The [National Basketball Association Most Valuable Player Award](https://en.wikipedia.org/wiki/NBA_Most_Valuable_Player_Award) (MVP) is an annual National Basketball Association (NBA) award given since the 1955–56 season to the best performing player of the regular season.
+This project aims at predicting the player who will win the NBA MVP award, by modelling the voting panel. The National Basketball Association (NBA) is given since the 1955–56 season to the best performing player of the regular season. Until the 1979–80 season, the MVP was selected by a vote of NBA players. Since the 1980–81 season, the award is decided by a panel of sportswriters and broadcasters throughout the United States and Canada - more info (here)[https://en.wikipedia.org/wiki/NBA_Most_Valuable_Player_Award].
 
 Have a look at the last model predictions at [nbamvp.herokuapp.com](https://nbamvp.herokuapp.com) !
 
