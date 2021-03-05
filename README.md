@@ -28,20 +28,20 @@ Track models performance :
 There is only 1 MVP per year, among hundreds of players.
 
 Solutions :
-- use MVP share instead of MVP award (regression model)
-- use generally accepted tresholds to filter non-MVP players : 
-  - more than 40% of the season games played
-  - more than 20 minutes played per game
-  - team conference rank above 9 (playoff qualifier)
+- Use MVP share instead of MVP award as the target variable (regression model)
+- Use generally accepted tresholds to filter non-MVP players : 
+  - More than 40% of the season games played
+  - More than 20 minutes played per game
+  - Team conference rank above 9 (playoff qualifier)
 
 #### Label consistency
 
 A player winning MVP one year may not have won MVP the year before, event with the same stats. It all depends on the other players competition.
 
 Solutions :
-- normalize stats per season
-  - min-max scaling
-  - standardization
+- Normalize stats per season
+  - Min-max scaling
+  - Standardization
 
 ## Future work and model improvement ideas
 
