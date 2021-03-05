@@ -28,8 +28,8 @@ Track models performance :
 There is only 1 MVP per year, among hundreds of players.
 
 Solutions :
-- Use MVP share instead of MVP award as the target variable (regression model)
-- Use generally accepted tresholds to filter non-MVP players : 
+- Use MVP share instead of MVP award as the target variable (regression model). A dozen of players receive votes each season.
+- Use generally accepted tresholds to filter non-MVP players and reduce the imbalance : 
   - More than 40% of the season games played
   - More than 20 minutes played per game
   - Team conference rank above 9 (playoff qualifier)
