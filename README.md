@@ -28,24 +28,25 @@ Track models performance :
 There is only 1 MVP per year, among hundreds of players.
 
 Solutions :
-- use MVP share instead of MVP award (regression model)
-- use generally accepted tresholds to filter non-MVP players : 
-  - more than 40% of the season games played
-  - more than 20 minutes played per game
-  - team conference rank above 9 (playoff qualifier)
+- Use MVP share instead of MVP award as the target variable (regression model). A dozen of players receive votes each season.
+- Use generally accepted tresholds to filter non-MVP players and reduce the imbalance : 
+  - More than 40% of the season games played
+  - More than 20 minutes played per game
+  - Team conference rank above 9 (playoff qualifier)
 
 #### Label consistency
 
 A player winning MVP one year may not have won MVP the year before, event with the same stats. It all depends on the other players competition.
 
 Solutions :
-- normalize stats per season
-  - min-max scaling
-  - standardization
+- Normalize stats per season
+  - Min-max scaling
+  - Standardization
 
 ## Future work and model improvement ideas
 
 - Rank stats (another solution for label consistency issue)
 - Use previous years voting results (to model voters lassitude phenomena)
 - Limit the players pool in each team to 2 or 3 players based on a treshold to define (or on another model)
-- Addd top performances or statement games as a feature
+- Add top performances or statement games as a feature
+- The current model output may be a negative number. This is impossible in real life, since the prediction is an MVP share. Could we leverage on this information to force the model to output non-negative numbers ?
