@@ -6,5 +6,5 @@
 Pipfile
 Pipfile.lock
 
-# Temp solutions for storing predictions, TOTO use s3
+# Temp solutions for storing predictions, TODO use s3
 #/data/predictions/*.csv
