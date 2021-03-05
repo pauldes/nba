@@ -48,4 +48,5 @@ Solutions :
 - Rank stats (another solution for label consistency issue)
 - Use previous years voting results (to model voters lassitude phenomena)
 - Limit the players pool in each team to 2 or 3 players based on a treshold to define (or on another model)
-- Addd top performances or statement games as a feature
+- Add top performances or statement games as a feature
+- The current model output may be a negative number. This is impossible in real life, since the prediction is an MVP share. Could we leverage on this information to force the model to output non-negative numbers ?
