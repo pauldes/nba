@@ -1,4 +1,5 @@
 /nba/__pycache__/
+/nba/*.egg-info/
 /.vscode/
 /data/training/*.csv
 /data/current/*/*.csv
