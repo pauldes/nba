@@ -1,11 +1,12 @@
 import datetime
-import os, errno
+import os
+import errno
 
 import streamlit as st
 import pandas
 import joblib
-import numpy
 import shap
+import sklearn
 from matplotlib import pyplot
 
 from nba import br_extractor, preprocess, evaluate
@@ -31,6 +32,11 @@ st.set_page_config(
 # Functions
 # @st.cache
 def load_model():
+    """Load the model.
+
+    Returns:
+        sklearn.base.BaseEstimator: The model to use for prediction
+    """
     return joblib.load("static/model/model.joblib")
 
 
@@ -52,7 +58,6 @@ def build_history(day, month, season):
             predictions["date"] = pandas.to_datetime(
                 filename, format="%Y_%m_%d.csv", errors="ignore"
             )
-            # predictions["date"] = filename[:10]
             stats = stats.append(predictions, sort=False)
     return stats
 
@@ -113,11 +118,21 @@ def consolidate_stats(team_stats, player_stats, day, month, season):
 
 
 def load_2020_preds():
+    """ Load the predictions made by the trained model for the 2020 season.
+
+    Returns:
+        pandas.DataFrame: Detailed redictions made for 2020 season
+    """
     preds = pandas.read_csv("./static/data/2020_dataset_predictions.csv")
     return preds
 
 
 def load_test_preds():
+    """ Load the predictions made by the trained model on the test dataset.
+
+    Returns:
+        pandas.DataFrame: Predicted MVP for the test seasons
+    """
     preds = pandas.read_csv("./static/data/test_dataset_predictions.csv")
     return preds
 
@@ -157,7 +172,16 @@ def save_predictions(series, day, month, year, filter_above=0.01):
         series.to_csv(folder + filename, header=False)
 
 
-def predict(data, model):
+def predict(data: pandas.DataFrame, model:sklearn.base.BaseEstimator):
+    """ Run the prediction pipeline to compute MVP shares
+
+    Args:
+        data (pandas.DataFrame): Input data (current season stats)
+        model (sklearn.base.BaseEstimator): Trained model
+
+    Returns:
+        [type]: [description]
+    """
     # TODO get automatically from training step.. or keep all
     cat = ["POS", "CONF"]
     # TODO get automatically from training step.. or keep all
@@ -323,7 +347,13 @@ def explain(population, sample_to_explain):
     return shap_values
 
 
-def st_shap(plot, height=None):
+def st_shap(plot, height: int = None):
+    """Plot a shap-js plot.
+
+    Args:
+        plot ([type]): [description]
+        height (int, optional): Height of the plot. Defaults to None.
+    """
     shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
     st.components.v1.html(shap_html, height=height)
 
@@ -352,13 +382,14 @@ def prepare_history(stats, keep_top_n, confidence_mode, compute_probs_based_on_t
 
 
 def predict_old():
+    """A method used adhoc whenever a new model is deployed and we have to run it on the past data to update history."""
     folders = [x[0] for x in os.walk("./data/current/")]
     for folder in folders:
         try:
-            date = folder[-10:]
-            year = int(date[:4])
-            month = int(date[5:7])
-            day = int(date[8:])
+            folder_date = folder[-10:]
+            folder_year = int(folder_date[:4])
+            folder_month = int(folder_date[5:7])
+            folder_day = int(folder_date[8:])
             current_consolidated_raw = pandas.read_csv(
                 folder + "/consolidated_stats.csv", index_col=0
             )
@@ -368,16 +399,16 @@ def predict_old():
             dataset.loc[:, "PRED"] = predictions
             dataset = dataset.sort_values(by="PRED", ascending=False)
             dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
-            save_predictions(dataset["PRED"], day, month, year)
+            save_predictions(dataset["PRED"], folder_day, folder_month, folder_year)
         except FileNotFoundError:
             pass
         except Exception as e:
-            print(f"Could not compute predictions for {date} : {e}")
+            print(f"Could not compute predictions for {folder_date} : {e}")
 
 
 navigation_page = st.sidebar.radio("Navigate to", [PAGE_PREDICTIONS, PAGE_PERFORMANCE])
 st.sidebar.markdown(
-    f"""
+    """
 **How does it work ?**
 
 A statistical regression model is fitted on historical data (player and team stats, and MVP voting results).
@@ -387,12 +418,12 @@ This share can then be converted to a chance/probability using various methods (
 """
 )
 st.sidebar.markdown(
-    f"""
+    """
 *Made by [pauldes](https://github.com/pauldes). Code on [GitHub](https://github.com/pauldes/nba-mvp-prediction).*
 """
 )
 
-st.title(f"🏀 Predicting the MVP")
+st.title("🏀 Predicting the MVP")
 st.markdown(
     f"""
 *Predicting the NBA Most Valuable Player for the {year-1}-{str(year)[-2:]} season using machine learning.*
@@ -483,7 +514,7 @@ if navigation_page == PAGE_PREDICTIONS:
         data=dataset.head(compute_probs_based_on_top_n), width=None, height=None
     )
 
-    st.subheader(f"Share predictions history")
+    st.subheader("Share predictions history")
     col1, col2 = st.beta_columns(2)
     keep_top_n = col2.slider(
         "Number of players to show",
@@ -497,7 +528,7 @@ if navigation_page == PAGE_PREDICTIONS:
         "Predicted MVP share": "prediction",
     }
     variable_to_draw = col1.radio(
-        "Variable to draw", [var for var in variable_to_draw_dict.keys()]
+        "Variable to draw", list(variable_to_draw_dict.keys())
     )
     history = build_history(day, month, year).copy(deep=True)
     prepared_history = prepare_history(
@@ -527,7 +558,7 @@ if navigation_page == PAGE_PREDICTIONS:
         use_container_width=True,
     )
 
-    st.subheader(f"Predictions explanation")
+    st.subheader("Predictions explanation")
 
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     shap_values = explain(model_input, model_input_top10)
