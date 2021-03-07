@@ -11,6 +11,9 @@ Have a look at the last model predictions at [nbamvp.herokuapp.com](https://nbam
 
 ## Development
 
+Install the Python dependencies :
+```pipenv install --dev```
+
 Run the web app locally : 
 ```pipenv run streamlit run app_web.py```
 
