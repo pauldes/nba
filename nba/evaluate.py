@@ -1,8 +1,9 @@
 import pandas
 import numpy
 
-def softmax(series:pandas.Series):
-    """ Compute softmax values for each sets of scores in x.
+
+def softmax(series: pandas.Series):
+    """Compute softmax values for each sets of scores in x.
 
     Args:
         series (pandas.Series): Series
@@ -13,8 +14,9 @@ def softmax(series:pandas.Series):
     e_x = numpy.exp(series - numpy.max(series))
     return e_x / e_x.sum()
 
-def share(series:pandas.Series):
-    """ Compute the share of each value in the series by its share of the series total
+
+def share(series: pandas.Series):
+    """Compute the share of each value in the series by its share of the series total
 
     Args:
         series (pandas.Series): Series
@@ -23,4 +25,3 @@ def share(series:pandas.Series):
         pandas.Series: Series of shares (total is 1)
     """
     return series / series.sum()
-    
