@@ -143,7 +143,6 @@ class BRExtractor():
                     team_names[raw] = short
                 data = data[~data["TEAM"].str.contains("DIVISION")]
                 unmapped_teams = [team for team in data["TEAM"].unique() if team not in team_names.keys()]
-                mapped_teams = [team for team in data["TEAM"].unique() if team in team_names.keys()]
                 data.loc[:, "TEAM"] = data["TEAM"].map(team_names)
                 if data["TEAM"].isna().sum() > 0:
                     raise ValueError("Unknown/unmapped teams : %s", unmapped_teams)
