@@ -398,6 +398,8 @@ def predict_old():
             predictions, _ = predict(dataset, model)
             dataset.loc[:, "PRED"] = predictions
             dataset = dataset.sort_values(by="PRED", ascending=False)
+            # Replace impossible negative values
+            dataset.loc[:, "PRED"] = dataset["PRED"].clip(lower=0.0)
             dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
             save_predictions(dataset["PRED"], folder_day, folder_month, folder_year)
         except FileNotFoundError:
@@ -449,6 +451,8 @@ initial_columns = list(dataset.columns)
 predictions, model_input = predict(dataset, model)
 dataset.loc[:, "PRED"] = predictions
 dataset = dataset.sort_values(by="PRED", ascending=False)
+# Replace impossible negative values
+dataset.loc[:, "PRED"] = dataset["PRED"].clip(lower=0.0)
 players_list = dataset.index.to_list()
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
 save_predictions(dataset["PRED"], day, month, year)
