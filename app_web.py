@@ -565,7 +565,8 @@ if navigation_page == PAGE_PREDICTIONS:
     st.subheader("Predictions explanation")
 
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
-    shap_values = explain(model_input, model_input_top10)
+    shap_values = explain(model_input_top10, model_input_top10)
+    #shap_values = explain(model_input, model_input_top10)
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
