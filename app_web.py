@@ -118,7 +118,7 @@ def consolidate_stats(team_stats, player_stats, day, month, season):
 
 
 def load_2020_preds():
-    """ Load the predictions made by the trained model for the 2020 season.
+    """Load the predictions made by the trained model for the 2020 season.
 
     Returns:
         pandas.DataFrame: Detailed redictions made for 2020 season
@@ -128,7 +128,7 @@ def load_2020_preds():
 
 
 def load_test_preds():
-    """ Load the predictions made by the trained model on the test dataset.
+    """Load the predictions made by the trained model on the test dataset.
 
     Returns:
         pandas.DataFrame: Predicted MVP for the test seasons
@@ -172,8 +172,8 @@ def save_predictions(series, day, month, year, filter_above=0.01):
         series.to_csv(folder + filename, header=False)
 
 
-def predict(data: pandas.DataFrame, model:sklearn.base.BaseEstimator):
-    """ Run the prediction pipeline to compute MVP shares
+def predict(data: pandas.DataFrame, model: sklearn.base.BaseEstimator):
+    """Run the prediction pipeline to compute MVP shares
 
     Args:
         data (pandas.DataFrame): Input data (current season stats)
@@ -566,7 +566,7 @@ if navigation_page == PAGE_PREDICTIONS:
 
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     shap_values = explain(model_input_top10, model_input_top10)
-    #shap_values = explain(model_input, model_input_top10)
+    # shap_values = explain(model_input, model_input_top10)
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
