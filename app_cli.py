@@ -1,7 +1,7 @@
 import argparse
 import datetime
 import pandas
-from nba import br_extractor
+from nba import br_extractor, clean, train
 
 __version__ = "0.1.0"
 year = datetime.datetime.now().year
@@ -24,9 +24,6 @@ def get_parser():
         action="store_true",
     )
     parser.add_argument("-t", "--train", help="Train model", action="store_true")
-    parser.add_argument(
-        "-x", "--expose", help="Expose model on streamlit", action="store_true"
-    )
     return parser
 
 
@@ -90,14 +87,8 @@ def consolidate():
 
 
 def train():
-    # clean_data.ipynb
-    # train_model.ipynb
-    pass
-
-
-def expose():
-    pass
-
+    clean()
+    train()
 
 def main(args=None):
     """Main entry point.
@@ -113,9 +104,6 @@ def main(args=None):
         consolidate()
     if args.train:
         train()
-    if args.expose:
-        expose()
-
 
 if __name__ == "__main__":
     main()
