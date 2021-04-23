@@ -91,7 +91,7 @@ def consolidate():
 
 def train():
     # clean_data.ipynb
-    # training_model.ipynb
+    # train_model.ipynb
     pass
 
 
