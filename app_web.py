@@ -580,7 +580,7 @@ if navigation_page == PAGE_PREDICTIONS:
     player_index = int(player_index.index[0])
     fig, ax = pyplot.subplots()
     shap.plots.bar(
-        shap_values[player_index], max_display=num_features_displayed, show=False
+        shap_values[player_index], max_display=num_features_displayed, show=False, height=100
     )
     #shap.plots.waterfall(
     #    shap_values[player_index], max_display=num_features_displayed, show=False
@@ -593,7 +593,7 @@ if navigation_page == PAGE_PREDICTIONS:
     Impacts (SHAP values) are relative to the top-10 predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
     """
     )
-    st.pyplot(fig, width=None, height=200)
+    st.pyplot(fig, width=None, height=100)
 
 elif navigation_page == PAGE_PERFORMANCE:
 
