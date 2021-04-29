@@ -22,4 +22,4 @@ jobs:
       - name: Score CLI app with pylint
         run: pylint ./app_cli.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
       - name: Score webapp with pylint
-        run: pylint ./app_cli.py --disable missing-module-docstring,import-error,fixme --fail-under=7.0
+        run: pylint ./app_web.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
