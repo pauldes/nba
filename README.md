@@ -53,3 +53,16 @@ Solutions :
 - Limit the players pool in each team to 2 or 3 players based on a treshold to define (or on another model)
 - Add top performances or statement games as a feature
 - The current model output may be a negative number. This is impossible in real life, since the prediction is an MVP share. Could we leverage on this information to force the model to output non-negative numbers ?
+
+
+## Tools and main libraries
+
+This project relies on awesome libraries, check them out :
+[mlflow](https://github.com/mlflow/mlflow)
+[streamlit](https://github.com/streamlit/streamlit)
+[scikit-learn](https://github.com/scikit-learn/scikit-learn)
+[black](https://github.com/psf/black)
+[pylint](https://github.com/PyCQA/pylint)
+[pipenv](https://github.com/pypa/pipenv)
+[beautifulsoup](https://github.com/wention/BeautifulSoup4)
+and [more](./requirements.txt)
