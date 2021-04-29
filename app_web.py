@@ -579,9 +579,12 @@ if navigation_page == PAGE_PREDICTIONS:
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     fig, ax = pyplot.subplots()
-    shap.plots.waterfall(
+    shap.plots.bar(
         shap_values[player_index], max_display=num_features_displayed, show=False
     )
+    #shap.plots.waterfall(
+    #    shap_values[player_index], max_display=num_features_displayed, show=False
+    #)
     pyplot.title(
         f"{num_features_displayed} most impactful features on share prediction for {selected_player}"
     )
