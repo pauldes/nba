@@ -588,6 +588,11 @@ if navigation_page == PAGE_PREDICTIONS:
     pyplot.title(
         f"{num_features_displayed} most impactful features on share prediction for {selected_player}"
     )
+    st.markdown(
+        """
+    Impacts (SHAP values) are relative to the top-10 predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
+    """
+    )
     st.pyplot(fig)
 
 elif navigation_page == PAGE_PERFORMANCE:
