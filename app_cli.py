@@ -90,6 +90,7 @@ def train():
     clean()
     train()
 
+
 def main(args=None):
     """Main entry point.
 
@@ -104,6 +105,7 @@ def main(args=None):
         consolidate()
     if args.train:
         train()
+
 
 if __name__ == "__main__":
     main()
