@@ -580,7 +580,7 @@ if navigation_page == PAGE_PREDICTIONS:
     player_index = int(player_index.index[0])
     fig, ax = pyplot.subplots()
     shap.plots.bar(
-        shap_values[player_index], max_display=num_features_displayed, show=False, height=100
+        shap_values[player_index], max_display=num_features_displayed, show=False
     )
     #shap.plots.waterfall(
     #    shap_values[player_index], max_display=num_features_displayed, show=False
