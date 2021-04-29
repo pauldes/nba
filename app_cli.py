@@ -86,7 +86,7 @@ def consolidate():
     all_data.to_csv(path)
 
 
-def train():
+def retrain():
     clean()
     train()
 
@@ -104,7 +104,7 @@ def main(args=None):
     if args.consolidate:
         consolidate()
     if args.train:
-        train()
+        retrain()
 
 
 if __name__ == "__main__":
