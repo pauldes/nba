@@ -8,8 +8,8 @@ email = \"dummy@email.com\"\n\
 echo "\
 
 [global]\
-disableWatchdogWarning = false\
-sharingMode = "off"\
+disableWatchdogWarning = false\n\
+sharingMode = \"off\"\n\
 [server]\n\
 headless = true\n\
 enableCORS=false\n\
