@@ -28,7 +28,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="auto",
 )
-pyplot.style.use('dark-background')
+pyplot.style.use('dark_background')
 
 # Functions
 # @st.cache
