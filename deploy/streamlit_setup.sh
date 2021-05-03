@@ -15,6 +15,7 @@ sharingMode = \"off\"\n\
 headless = true\n\
 enableCORS=false\n\
 folderWatchBlacklist = ['*']\n\
-watchFileSystem = false\n\
 port = $PORT\n\
+[theme]
+primaryColor =  \"#F7630C\"\n\
 " > ~/.streamlit/config.toml
