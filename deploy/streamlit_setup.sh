@@ -18,4 +18,7 @@ folderWatchBlacklist = ['*']\n\
 port = $PORT\n\
 [theme]
 primaryColor =  \"#F7630C\"\n\
+textColor=\"#EFECEC\" \n\
+backgroundColor = \"#525050\"\n\
+secondaryBackgroundColor=\"#2E2D2D\"\n\
 " > ~/.streamlit/config.toml
