@@ -12,6 +12,6 @@ sharingMode = \"off\"\n\
 [server]\n\
 headless = true\n\
 enableCORS=false\n\
-watchFileSystem = false\n\
+folderWatchBlacklist = ['*']\n\
 port = $PORT\n\
 " > ~/.streamlit/config.toml
