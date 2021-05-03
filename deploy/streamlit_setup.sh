@@ -6,8 +6,7 @@ email = \"dummy@email.com\"\n\
 " > ~/.streamlit/credentials.toml
 
 echo "\
-
-[global]\
+[global]\n\
 disableWatchdogWarning = false\n\
 sharingMode = \"off\"\n\
 [server]\n\
