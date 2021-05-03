@@ -28,7 +28,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="auto",
 )
-pyplot.style.use('seaborn-dark')
+pyplot.style.use('fivethirtyeight')
 
 # Functions
 # @st.cache
