@@ -1,5 +1,7 @@
 mkdir -p ~/.streamlit/
 
+# https://docs.streamlit.io/en/stable/streamlit_configuration.html
+
 echo "\
 [general]\n\
 email = \"dummy@email.com\"\n\
