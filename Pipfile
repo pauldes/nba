@@ -1,0 +1,33 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+mlflow = "*"
+jupyter = "*"
+black = "*"
+
+[packages]
+nba = {path = "./nba"}
+qbstyles = "*"
+heatmapz = "*"
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
+sklearn = "*"
+beautifulsoup4 = "*"
+basketball-reference-scraper = "*"
+pyyaml = "*"
+html5lib = "*"
+scipy = "*"
+streamlit = "*"
+unidecode = "*"
+shap = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

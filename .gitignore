@@ -4,8 +4,7 @@
 /data/training/*.csv
 /data/current/*/*.csv
 /mlruns/
-Pipfile
-Pipfile.lock
+requirements.txt
 
 # Temp solutions for storing predictions, TODO use s3
 #/data/predictions/*.csv
