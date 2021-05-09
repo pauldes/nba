@@ -106,6 +106,5 @@ def main(args=None):
     if args.train:
         retrain()
 
-
 if __name__ == "__main__":
     main()
