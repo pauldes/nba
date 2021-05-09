@@ -1,0 +1,17 @@
+# https://docs.streamlit.io/en/stable/streamlit_configuration.html
+
+[global]
+disableWatchdogWarning = true
+sharingMode = "off"
+
+[server]
+headless = true
+enableCORS=false
+folderWatchBlacklist = ['*', '.']
+port = $PORT
+
+[theme]
+primaryColor =  "#F7630C"
+textColor="#EFECEC" 
+backgroundColor = "#525050"
+secondaryBackgroundColor="#2E2D2D"
