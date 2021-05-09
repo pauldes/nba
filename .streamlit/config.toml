@@ -8,7 +8,6 @@ sharingMode = "off"
 headless = true
 enableCORS=false
 folderWatchBlacklist = ['*', '.']
-port = $PORT
 
 [theme]
 primaryColor =  "#F7630C"

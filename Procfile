@@ -1,1 +1,1 @@
-web: ls && streamlit run app_web.py
+web: ls && streamlit run --server.port=$PORT app_web.py
