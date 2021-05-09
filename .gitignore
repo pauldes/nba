@@ -4,7 +4,6 @@
 /data/training/*.csv
 /data/current/*/*.csv
 /mlruns/
-requirements.txt
 
 # Temp solutions for storing predictions, TODO use s3
 #/data/predictions/*.csv
