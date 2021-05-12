@@ -5,7 +5,7 @@ import requests
 import pandas
 from bs4 import BeautifulSoup
 from basketball_reference_scraper.seasons import get_standings
-from utils import get_dict_from_yaml
+from nba.utils import get_dict_from_yaml
 
 """ 
 1955-56 through 1979-1980: Voting was done by players. Rules prohibited player from voting for himself or any teammate.
