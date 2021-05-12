@@ -5,6 +5,7 @@ import requests
 import pandas
 from bs4 import BeautifulSoup
 from basketball_reference_scraper.seasons import get_standings
+from utils import get_dict_from_yaml
 
 """ 
 1955-56 through 1979-1980: Voting was done by players. Rules prohibited player from voting for himself or any teammate.
@@ -17,19 +18,7 @@ class BRExtractor:
     default_team_names_file_path = "./nba/team_names.yaml"
 
     def __init__(self, team_names_file_path=default_team_names_file_path):
-        self.team_names = self._get_yaml(team_names_file_path)
-
-    @staticmethod
-    def _get_yaml(yaml_file_path):
-        """Get a YAML file as a dictionnary."""
-        with open(yaml_file_path, "r") as stream:
-            try:
-                loaded = yaml.safe_load(stream)
-            except yaml.YAMLError as e:
-                print("Could not load YAML file", yaml_file_path, ":", e)
-                return dict()
-            else:
-                return loaded
+        self.team_names = get_dict_from_yaml(team_names_file_path)
 
     @staticmethod
     def retrieve_mvp_votes(season):
