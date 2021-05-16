@@ -6,7 +6,8 @@ sharingMode = "off"
 
 [server]
 headless = true
-enableCORS=false
+enableCORS=true
+enableXsrfProtection=true
 folderWatchBlacklist = ['*', '.']
 
 [theme]
