@@ -519,7 +519,7 @@ if navigation_page == PAGE_PREDICTIONS:
         data=dataset.head(compute_probs_based_on_top_n), width=None, height=None
     )
 
-    st.subheader("Share predictions history")
+    st.subheader("Predictions history")
     col1, col2 = st.beta_columns(2)
     keep_top_n = col2.slider(
         "Number of players to show",
