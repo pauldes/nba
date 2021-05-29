@@ -90,6 +90,13 @@ def load_player_stats(day, month, season):
         stats.to_csv(folder + filename)
     return stats
 
+def is_season_ended():
+    """ Find out if current season is over.
+
+    Returns:
+        boolean: True if season is over, False if season is in progress.
+    """
+    return True
 
 @st.cache
 def load_team_stats(day, month, season):
@@ -456,7 +463,10 @@ dataset = dataset.sort_values(by="PRED", ascending=False)
 dataset.loc[:, "PRED"] = dataset["PRED"].clip(lower=0.0)
 players_list = dataset.index.to_list()
 dataset.loc[:, "PRED_RANK"] = dataset["PRED"].rank(ascending=False)
-save_predictions(dataset["PRED"], day, month, year)
+if is_season_ended:
+    pass
+else:
+    save_predictions(dataset["PRED"], day, month, year)
 
 if navigation_page == PAGE_PREDICTIONS:
 
