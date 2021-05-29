@@ -15,10 +15,10 @@ Install the Python dependencies :
 ```pipenv install --dev```
 
 Run the web app locally : 
-```pipenv run streamlit run app_web.py```
+```pipenv run streamlit run webapp.py```
 
 Load fresh data :
-```pipenv run python app_cli.py --help```
+```pipenv run python cli.py --help```
 
 Track models performance :
 ```pipenv run mlflow ui```

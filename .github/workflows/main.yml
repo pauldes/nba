@@ -20,9 +20,9 @@ jobs:
       - name: Score nba module with pylint
         run: pylint ./nba/ --disable missing-module-docstring,import-error,fixme --fail-under=7.0
       - name: Score CLI app with pylint
-        run: pylint ./app_cli.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
+        run: pylint ./cli.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
       - name: Score webapp with pylint
-        run: pylint ./app_web.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
+        run: pylint ./webapp.py --disable missing-module-docstring,import-error,fixme --fail-under=6.0
   pipfile-lock-check:
     runs-on: ubuntu-latest
     steps:
