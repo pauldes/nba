@@ -13,7 +13,7 @@ def drop_columns_by_nan_ratio(dataframe, ratio: float):
     if not 0.0 <= ratio <= 1.0:
         raise ValueError("Ratio must be between 0 and 1")
     else:
-        ratios = data.isna().sum(axis="index") / len(data)
+        ratios = dataframe.isna().sum(axis="index") / len(dataframe)
         ratios = ratios[ratios > ratio]
         cols = ratios.index.tolist()
         print("Dropping", cols, "...")
