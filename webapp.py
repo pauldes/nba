@@ -580,12 +580,21 @@ if navigation_page == PAGE_PREDICTIONS:
 
     col1, col2, col3 = st.beta_columns(3)
 
+    selected_player = col1.selectbox("Player", players_list[:10])
+    num_features_displayed = col2.slider(
+        "Number of features to show", min_value=5, max_value=50, value=10, step=5
+    )
     population_size = col3.slider(
         "Number of players to estimate features impact from",
         min_value=10,
         max_value=100,
         value=10,
         step=10,
+    )
+    st.markdown(
+    f"""
+    Impacts (SHAP values) are relative to the top-{population_size} predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
+    """
     )
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     population = model_input[model_input.index.isin(players_list[:population_size])]
@@ -594,18 +603,9 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
-    selected_player = col1.selectbox("Player", players_list[:10])
-    num_features_displayed = col2.slider(
-        "Number of features to show", min_value=5, max_value=50, value=10, step=5
-    )
-
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
-    st.markdown(
-    f"""
-    Impacts (SHAP values) are relative to the top-{population_size} predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
-    """
-    )
+    
     fig, ax = pyplot.subplots()
     shap.plots.bar(
         shap_values[player_index], max_display=num_features_displayed, show=True
