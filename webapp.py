@@ -617,11 +617,11 @@ if navigation_page == PAGE_PREDICTIONS:
     col1.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
-    shap.summary_plot(shap_values, population, plot_type="bar")
+    shap.summary_plot(shap_values, population, plot_type="bar", max_display=num_features_displayed)
     col2.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
-    shap.summary_plot(shap_values, population)
+    shap.summary_plot(shap_values, population, max_display=num_features_displayed)
     col3.pyplot(fig, transparent=True, width=None, height=100)
 
 
