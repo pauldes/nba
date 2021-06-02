@@ -67,4 +67,4 @@ This project relies on awesome libraries, check them out :
 [pylint](https://github.com/PyCQA/pylint)
 [pipenv](https://github.com/pypa/pipenv)
 [beautifulsoup](https://github.com/wention/BeautifulSoup4)
-and [more](./requirements.txt)
+and [more](./Pipfile)
