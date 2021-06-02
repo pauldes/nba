@@ -8,7 +8,6 @@ pylint = "*"
 mlflow = "*"
 jupyter = "*"
 black = "*"
-pre-commit = "*"
 
 [packages]
 nba = {path = "./nba"}
