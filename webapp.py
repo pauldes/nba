@@ -582,7 +582,7 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
-    col1, col2 = st.beta_columns(2)
+    col1, col2, col3 = st.beta_columns(3)
     selected_player = col1.selectbox("Player", players_list[:10])
     num_features_displayed = col2.slider(
         "Number of features to show", min_value=5, max_value=50, value=10, step=5
@@ -607,15 +607,13 @@ if navigation_page == PAGE_PREDICTIONS:
     )
     col1.pyplot(fig, transparent=True, width=None, height=100)
 
-    col21, col22 = col2.beta_columns(2)
-
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population, plot_type='bar')
-    col21.pyplot(fig, transparent=True, width=None, height=100)
+    col2.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population)
-    col21.pyplot(fig, transparent=True, width=None, height=100)
+    col3.pyplot(fig, transparent=True, width=None, height=100)
 
 
 elif navigation_page == PAGE_PERFORMANCE:
