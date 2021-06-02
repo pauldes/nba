@@ -618,10 +618,16 @@ if navigation_page == PAGE_PREDICTIONS:
 
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population, plot_type="bar", max_display=num_features_displayed)
+    pyplot.title(
+        f"{num_features_displayed} most impactful features for top-{population_size} players"
+    )
     col2.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population, max_display=num_features_displayed)
+    pyplot.title(
+        f"{num_features_displayed} most impactful features for top-{population_size} players"
+    )
     col3.pyplot(fig, transparent=True, width=None, height=100)
 
 
