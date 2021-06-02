@@ -28,7 +28,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="auto",
 )
-pyplot.style.use('dark_background')
+pyplot.style.use("dark_background")
 
 # Functions
 # @st.cache
@@ -90,13 +90,15 @@ def load_player_stats(day, month, season):
         stats.to_csv(folder + filename)
     return stats
 
+
 def is_season_ended():
-    """ Find out if current season is over.
+    """Find out if current season is over.
 
     Returns:
         boolean: True if season is over, False if season is in progress.
     """
     return True
+
 
 @st.cache
 def load_team_stats(day, month, season):
@@ -573,8 +575,16 @@ if navigation_page == PAGE_PREDICTIONS:
         use_container_width=True,
     )
 
+    col1, col2, col3 = st.beta_columns(3)
+
     st.subheader("Predictions explanation")
-    population_size = 10
+    population_size = col3.slider(
+        "Number of players to estimate features impact from",
+        min_value=10,
+        max_value=100,
+        value=10,
+        step=10,
+    )
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     population = model_input[model_input.index.isin(players_list[:population_size])]
     shap_values = explain(model_input_top10, population)
@@ -582,7 +592,6 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
-    col1, col2, col3 = st.beta_columns(3)
     selected_player = col1.selectbox("Player", players_list[:10])
     num_features_displayed = col2.slider(
         "Number of features to show", min_value=5, max_value=50, value=10, step=5
@@ -599,16 +608,16 @@ if navigation_page == PAGE_PREDICTIONS:
     shap.plots.bar(
         shap_values[player_index], max_display=num_features_displayed, show=True
     )
-    #shap.plots.waterfall(
+    # shap.plots.waterfall(
     #    shap_values[player_index], max_display=num_features_displayed, show=False
-    #)
+    # )
     pyplot.title(
         f"{num_features_displayed} most impactful features on share prediction for {selected_player}"
     )
     col1.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
-    shap.summary_plot(shap_values, population, plot_type='bar')
+    shap.summary_plot(shap_values, population, plot_type="bar")
     col2.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
