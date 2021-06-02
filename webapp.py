@@ -575,9 +575,11 @@ if navigation_page == PAGE_PREDICTIONS:
         use_container_width=True,
     )
 
-    col1, col2, col3 = st.beta_columns(3)
 
     st.subheader("Predictions explanation")
+
+    col1, col2, col3 = st.beta_columns(3)
+
     population_size = col3.slider(
         "Number of players to estimate features impact from",
         min_value=10,
