@@ -574,9 +574,10 @@ if navigation_page == PAGE_PREDICTIONS:
     )
 
     st.subheader("Predictions explanation")
-
+    population_size = 10
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
-    shap_values = explain(model_input_top10, model_input_top10)
+    population = model_input[model_input.index.isin(players_list[:population_size])]
+    shap_values = explain(model_input_top10, population)
     # shap_values = explain(model_input, model_input_top10)
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
@@ -589,6 +590,11 @@ if navigation_page == PAGE_PREDICTIONS:
 
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
+    st.markdown(
+        """
+    Impacts (SHAP values) are relative to the top-10 predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
+    """
+    )
     fig, ax = pyplot.subplots()
     shap.plots.bar(
         shap_values[player_index], max_display=num_features_displayed, show=True
@@ -599,21 +605,16 @@ if navigation_page == PAGE_PREDICTIONS:
     pyplot.title(
         f"{num_features_displayed} most impactful features on share prediction for {selected_player}"
     )
-    st.markdown(
-        """
-    Impacts (SHAP values) are relative to the top-10 predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
-    """
-    )
     col1.pyplot(fig, transparent=True, width=None, height=100)
 
     col21, col22 = col2.beta_columns(2)
 
     fig, ax = pyplot.subplots()
-    shap.summary_plot(shap_values, model_input_top10, plot_type='bar')
+    shap.summary_plot(shap_values, population, plot_type='bar')
     col21.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
-    shap.summary_plot(shap_values, model_input_top10)
+    shap.summary_plot(shap_values, population)
     col21.pyplot(fig, transparent=True, width=None, height=100)
 
 
