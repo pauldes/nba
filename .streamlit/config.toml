@@ -3,6 +3,7 @@
 [global]
 disableWatchdogWarning = true
 sharingMode = "off"
+developmentMode = false
 
 [server]
 headless = true

@@ -35,7 +35,7 @@ Solutions :
 - Use generally accepted tresholds to filter non-MVP players and reduce the imbalance : 
   - More than 40% of the season games played
   - More than 20 minutes played per game
-  - Team conference rank above 9 (playoff qualifier)
+  - Team ranked in the conference top-8 (playoff qualifier)
 
 #### Label consistency
 
