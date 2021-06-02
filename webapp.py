@@ -600,8 +600,8 @@ if navigation_page == PAGE_PREDICTIONS:
     player_index = model_input_top10[model_input_top10.player == selected_player]
     player_index = int(player_index.index[0])
     st.markdown(
-        """
-    Impacts (SHAP values) are relative to the top-10 predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
+    f"""
+    Impacts (SHAP values) are relative to the top-{population_size} predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
     """
     )
     fig, ax = pyplot.subplots()
