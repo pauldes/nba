@@ -593,9 +593,9 @@ if navigation_page == PAGE_PREDICTIONS:
         "Number of features to show", min_value=5, max_value=50, value=10, step=5
     )
 
-    exclude_boolean_features = st.checkbox("Exclude categorical variables (may lead to biased impacts estimations)", True, help='SHAP values may not be reliable for  one-hot-encoded categorical variables, as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)')
-    if exclude_boolean_features:
-        pass
+    include_boolean_features = st.checkbox("Include categorical variables (may lead to biased impacts estimations)", True, help='SHAP values may not be reliable for  one-hot-encoded categorical variables, as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)')
+    if not include_boolean_features:
+        raise NotImplementedError("Excluding categorical variables from the explanations is not implemented yet.")
         #model_input = model_input[[f for f in model_input.columns if not is_boolean_feature(model_input[f])]]
 
     st.markdown("**Local explanation**")
@@ -604,7 +604,7 @@ if navigation_page == PAGE_PREDICTIONS:
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     population = model_input[model_input.index.isin(players_list[:population_size])]
     shap_values = explain(model_input_top10, population)
-    # shap_values = explain(model_input, model_input_top10)
+
     model_input_top10["player"] = model_input_top10.index
     model_input_top10 = model_input_top10.reset_index(drop=True)
 
