@@ -348,6 +348,9 @@ def predict(data: pandas.DataFrame, model: sklearn.base.BaseEstimator):
     preds = model.predict(X)
     return preds, X
 
+def is_boolean_feature(series):
+    return series.nunique() <= 2
+
 
 @st.cache
 def explain(population, sample_to_explain):
@@ -575,27 +578,29 @@ if navigation_page == PAGE_PREDICTIONS:
         use_container_width=True,
     )
 
-
     st.subheader("Predictions explanation")
 
-    col1, col2, col3 = st.beta_columns(3)
-
-    selected_player = col1.selectbox("Player", players_list[:10])
-    num_features_displayed = col2.slider(
-        "Number of features to show", min_value=5, max_value=50, value=10, step=5
-    )
-    population_size = col3.slider(
+    col1, col2 = st.beta_columns(2)
+    
+    population_size = col1.slider(
         "Number of players to estimate features impact from",
         min_value=10,
         max_value=100,
         value=10,
         step=10,
     )
-    st.markdown(
-    f"""
-    Impacts (SHAP values) are relative to the top-{population_size} predicted MVP candidates. These values may not be reliable for categorical variables (as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)).
-    """
+    num_features_displayed = col2.slider(
+        "Number of features to show", min_value=5, max_value=50, value=10, step=5
     )
+
+    exclude_boolean_features = st.checkbox("Exclude categorical variables (may lead to biased impacts estimations)", True, help='SHAP values may not be reliable for  one-hot-encoded categorical variables, as demonstrated [here](https://arxiv.org/pdf/2103.13342.pdf) and [here](https://arxiv.org/pdf/1909.08128.pdf)')
+    if exclude_boolean_features:
+        pass
+        #model_input = model_input[[f for f in model_input.columns if not is_boolean_feature(model_input[f])]]
+
+    st.markdown("**Local explanation**")
+
+    selected_player = st.selectbox("Player", players_list[:10])
     model_input_top10 = model_input[model_input.index.isin(players_list[:10])]
     population = model_input[model_input.index.isin(players_list[:population_size])]
     shap_values = explain(model_input_top10, population)
@@ -616,21 +621,23 @@ if navigation_page == PAGE_PREDICTIONS:
     pyplot.title(
         f"{num_features_displayed} most impactful features on share prediction for {selected_player}"
     )
-    col1.pyplot(fig, transparent=True, width=None, height=100)
+    st.pyplot(fig, transparent=True, width=None, height=100)
+
+    st.markdown("**Global explanation**")
 
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population, plot_type="bar", max_display=num_features_displayed)
     pyplot.title(
         f"{num_features_displayed} most impactful features for top-{population_size} players"
     )
-    col2.pyplot(fig, transparent=True, width=None, height=100)
+    st.pyplot(fig, transparent=True, width=None, height=100)
 
     fig, ax = pyplot.subplots()
     shap.summary_plot(shap_values, population, max_display=num_features_displayed)
     pyplot.title(
         f"{num_features_displayed} most impactful features for top-{population_size} players"
     )
-    col3.pyplot(fig, transparent=True, width=None, height=100)
+    st.pyplot(fig, transparent=True, width=None, height=100)
 
 
 elif navigation_page == PAGE_PERFORMANCE:
