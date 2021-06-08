@@ -5,5 +5,5 @@ setuptools.setup(
     version="0.0.1",
     description="Package used for the application nba-mvp-prediction",
     packages=[],
-    python_requires="==3.8",
+    python_requires="==3.7.9",
 )
